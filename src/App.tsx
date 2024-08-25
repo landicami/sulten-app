@@ -10,6 +10,7 @@ import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage";
 import AddRestaurantPage from "./pages/AddRestaurantPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import ListAllRestaurantsPage from "./pages/ListAllRestaurantPage";
+import "./assets/scss/App.scss";
 
 
 function App() {
