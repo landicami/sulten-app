@@ -1,6 +1,7 @@
 export type Admin = {
 	_id: string;
-	name: string;
+	uid: string;
+	name: string | null;
 	photoFiles: FileList;
 	email: string;
 	password: string;
@@ -22,7 +23,8 @@ export type SignupCredentials = {
 };
 
 export type UpdateAdminFormData = {
-	name: string;
+	uid: string;
+	name: string | null;
 	photoFiles: FileList;
 	email: string;
 	password: string;
