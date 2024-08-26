@@ -24,7 +24,7 @@
     "react-router-dom": "^6.26.1",
     "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
-    "sass": "^1.77.8"
+    "sass": "1.77.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

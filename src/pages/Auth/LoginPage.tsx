@@ -5,20 +5,20 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ILoginCredentials } from "../../types/Auth.types";
 import { FirebaseError } from "firebase/app";
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { LoginCredentials } from "../../types/Admin.types";
 
 const LoginPage = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(false);
-    const { handleSubmit, register, formState: { errors } } = useForm<ILoginCredentials>();
+    const { handleSubmit, register, formState: { errors } } = useForm<LoginCredentials>();
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const onLogin: SubmitHandler<ILoginCredentials> = async (data) => {
+    const onLogin: SubmitHandler<LoginCredentials> = async (data) => {
         setIsLoggingIn(true);
 
         try {
