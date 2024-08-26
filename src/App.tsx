@@ -11,6 +11,9 @@ import AddRestaurantPage from "./pages/AddRestaurantPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import ListAllRestaurantsPage from "./pages/ListAllRestaurantPage";
 import "./assets/scss/App.scss";
+import SignupPage from "./pages/SignupPage";
+import UpdateProfilePage from "./pages/Auth/UpdateProfilePage";
+import AboutUsPage from "./pages/AboutUsPage";
 
 
 function App() {
@@ -24,16 +27,19 @@ function App() {
 				<Route path="/" element={<MapPage />} />
 				<Route path="/add-restaurant" element={<AddRestaurantPage />} />
 				<Route path="/list-all-restaurants" element={<ListAllRestaurantsPage />} />
+				<Route path="/about-us" element={<AboutUsPage />} />
 
 				{/* Protected Routes */}
 				<Route element={<ProtectedRoutes />}>
 					<Route path="/admin-restaurant" element={<AdminRestaurantPage />} />
 					<Route path="/edit-restaurant" element={<EditRestaurantPage />} />
+					<Route path="/update-profile" element={<UpdateProfilePage />} />
 				</Route>
 
 				{/* Auth Routes */}
 				<Route path="/login" element={<LoginPage />} />
 				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+				<Route path="/signup" element={<SignupPage />} />
 			</Routes>
 
 			<ToastContainer
