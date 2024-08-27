@@ -13,7 +13,7 @@ const EditRestaurantPage = () => {
         const docRef = doc(restaurantCol, id);
 
         await updateDoc(docRef, {
-            data
+            ...data
         });
     }
 

@@ -31,7 +31,7 @@ function App() {
 
 				{/* Protected Routes */}
 				<Route element={<ProtectedRoutes />}>
-					<Route path="/admin-restaurant" element={<AdminRestaurantPage />} />
+					<Route path="/admin-restaurants" element={<AdminRestaurantPage />} />
 					<Route path="/restaurants/:id" element={<EditRestaurantPage />} />
 					<Route path="/update-profile" element={<UpdateProfilePage />} />
 				</Route>

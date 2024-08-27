@@ -13,10 +13,10 @@ const AddRestaurantPage = () => {
 
             await setDoc(docRef, {
                 ...data,
-                name: data.name,
+                name: data.name.trim(),
                 approvedByAdmin: data.approvedByAdmin ?? false,
-                address: data.address,
-                city: data.city,
+                address: data.address.trim(),
+                city: data.city.trim(),
                 description: data.description,
                 category: data.category,
                 offer: data.offer,
@@ -27,6 +27,8 @@ const AddRestaurantPage = () => {
                 instagram: data.instagram,
             });
 
+            toast.success("Submitted restaurant 🦄");
+
         } catch (error) {
             console.error("Error adding restaurant", error);
             if (error instanceof FirebaseError) {
@@ -35,15 +37,7 @@ const AddRestaurantPage = () => {
         }
 
         console.log(data);
-
-
-
-
     }
-
-
-
-
     return <RestaurantForm onSave={addResturant} />;
 };
 

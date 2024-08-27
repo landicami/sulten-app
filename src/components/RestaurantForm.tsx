@@ -10,6 +10,7 @@ import { Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 interface RestaurantFormProps {
 	initialValues?: Restaurant;
@@ -66,9 +67,12 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 								<Form.Control
 									aria-label="Add the name of the restaurant"
 									type="text"
-									{...register("name", { required: true })}
+									{...register("name", {
+										required: true,
+										minLength: 1,
+									})}
 								/>
-								{errors.name && <span className="form-required">This field is required</span>}
+								{errors.name && <span className="form-required">This field requires at least 1 char</span>}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
@@ -181,8 +185,15 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 								<Form.Control
 									aria-label="Add the phonenumber of the restaurant"
 									type="tel"
-									{...register("phone")}
+									{...register("phone", {
+										pattern: {
+											value: /^\+?[0-9]{8,}$/,
+											message: "You need to add at least 8 numbers",
+										}
+									},
+									)}
 								/>
+								{errors.phone && <span className="form-required">{errors.phone.message}</span>}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
@@ -218,6 +229,11 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 							<Button disabled={isAdding} className="mb-5" type="submit">
 								{isAdding ? "Adding restaurant..." : "Add restaurant"}
 							</Button>
+
+							{currentAdmin
+								? (<Link to="/admin-restaurants"><Button>Adminpage</Button></Link>)
+								: (<Link to="/"><Button>Map</Button></Link>)
+							}
 
 							{currentAdmin && (
 								<Form.Group className="mb-3">
