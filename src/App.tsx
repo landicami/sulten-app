@@ -15,6 +15,7 @@ import SignupPage from "./pages/SignupPage";
 import UpdateProfilePage from "./pages/Auth/UpdateProfilePage";
 import AboutUsPage from "./pages/AboutUsPage";
 import Container from "react-bootstrap/Container";
+import LogOutPage from "./pages/Auth/LogOutPage";
 
 function App() {
 	return (
@@ -37,6 +38,8 @@ function App() {
 
 				{/* Auth Routes */}
 				<Route path="/login" element={<LoginPage />} />
+				<Route path="/logout" element={<LogOutPage />} />
+
 				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
 				<Route path="/signup" element={<SignupPage />} />
 			</Routes>

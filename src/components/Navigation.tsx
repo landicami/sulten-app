@@ -26,9 +26,15 @@ const Navigation = () => {
 						<Nav.Link as={NavLink} end to="/add-restaurant">
 							Add recommendation
 						</Nav.Link>
-						<Nav.Link as={NavLink} end to="/login">
-							Log in as Admin
-						</Nav.Link>
+						{currentAdmin ? (
+							<Nav.Link as={NavLink} end to="logout">
+								Log out!
+							</Nav.Link>
+						) : (
+							<Nav.Link as={NavLink} end to="/login">
+								Log in as Admin
+							</Nav.Link>
+						)}
 
 						{/* Only if Admin is logged in */}
 						{currentAdmin && (
