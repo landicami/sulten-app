@@ -1,26 +1,24 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface ProtectedRoutesProps {
-	redirect?: string
+	redirect?: string;
 }
 
 const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ redirect = "/login" }) => {
 	const { currentAdmin } = useAuth();
+	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (currentAdmin) {
-			return;
+		if (!currentAdmin) {
+			toast.warning("You need to be logged in");
+			navigate(redirect);
 		}
-		throw new Error("You must be logged in to access this page!");
-	}, [currentAdmin]);
+	}, [currentAdmin, navigate, redirect]);
 
-	return (
-		currentAdmin
-			? <Outlet />
-			: <Navigate to={redirect} />
-	)
-}
+	return currentAdmin ? <Outlet /> : <Navigate to={redirect} />;
+};
 
 export default ProtectedRoutes;
