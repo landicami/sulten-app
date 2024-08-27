@@ -136,7 +136,7 @@ const AddRestaurantPage = () => {
 								{errors.offer && <span className="form-required">Please choose an offer</span>}
 							</Form.Group>
 
-							<Form.Group className="mb-3">
+							{/* <Form.Group className="mb-3">
 								<Form.Label>Upload photos</Form.Label>
 
 								<Form.Control
@@ -146,7 +146,7 @@ const AddRestaurantPage = () => {
 									accept=".jpeg, .jpg, .png"
 									multiple
 								/>
-							</Form.Group>
+							</Form.Group> */}
 
 							<Form.Group className="mb-3">
 								<Form.Label>Email</Form.Label>
