@@ -7,16 +7,16 @@ export type Admin = {
 	password: string;
 };
 
-export type ForgotPasswordCredentials = {
+export type ForgotPasswordInfo = {
 	email: string;
 };
 
-export type LoginCredentials = {
+export type LoginInfo = {
 	email: string;
 	password: string;
 };
 
-export type SignupCredentials = {
+export type SignupInfo = {
 	email: string;
 	password: string;
 	confirmPassword: string;
@@ -25,7 +25,7 @@ export type SignupCredentials = {
 export type UpdateAdminFormData = {
 	uid: string;
 	name: string | null;
-	photoFiles: FileList;
+	/* photoFiles: FileList; */
 	email: string;
 	password: string;
 	confirmPassword: string;

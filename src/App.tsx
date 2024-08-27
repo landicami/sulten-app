@@ -14,12 +14,11 @@ import "./assets/scss/App.scss";
 import SignupPage from "./pages/SignupPage";
 import UpdateProfilePage from "./pages/Auth/UpdateProfilePage";
 import AboutUsPage from "./pages/AboutUsPage";
-
+import Container from "react-bootstrap/Container";
 
 function App() {
 	return (
-		<div id="App">
-
+		<Container id="App">
 			<Navigation />
 
 			<Routes>
@@ -42,15 +41,9 @@ function App() {
 				<Route path="/signup" element={<SignupPage />} />
 			</Routes>
 
-			<ToastContainer
-				position="top-right"
-				autoClose={3000}
-				closeOnClick
-				pauseOnHover
-				theme="light"
-			/>
-		</div>
-	)
+			<ToastContainer position="top-right" autoClose={3000} closeOnClick pauseOnHover theme="light" />
+		</Container>
+	);
 }
 
 export default App;
