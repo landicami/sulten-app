@@ -9,6 +9,10 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { restaurantCol } from "../service/firebase";
+import { FirebaseError } from "firebase/app";
+import { toast } from "react-toastify";
 
 const AddRestaurantPage = () => {
 	const { currentAdmin } = useAuth();
@@ -27,10 +31,41 @@ const AddRestaurantPage = () => {
 	const onAddRestaurant: SubmitHandler<Restaurant> = async (data) => {
 		setIsAdding(true);
 
+		//Create a ref to photofiles and upload it to storage, then get the url
+
+		try {
+			const docRef = doc(restaurantCol);
+
+			await setDoc(docRef, {
+				...data,
+				name: data.name,
+				approvedByAdmin: data.approvedByAdmin,
+				address: data.address,
+				city: data.city,
+				description: data.description,
+				category: data.category,
+				offer: data.offer,
+				email: data.email,
+				phone: data.phone,
+				website: data.website,
+				facebook: data.facebook,
+				instagram: data.instagram,
+			});
+			// photoFiles: urlerna?,
+
+			// longLat: LongLat;
+		} catch (error) {
+			console.error("Error adding restaurant", error);
+			if (error instanceof FirebaseError) {
+				toast.error(error.message);
+			}
+		}
+
 		console.log(data);
 
 		//after uload is done
 		setIsAdding(false);
+		toast.success("Added restaurant for ya <3");
 	};
 
 	if (isSubmitSuccessful) {
@@ -41,7 +76,9 @@ const AddRestaurantPage = () => {
 			<Row className="justify-content-center">
 				<Col lg={6} md={8} sm={12}>
 					<Card className="p-3">
-						<Card.Title>Add information here about the restaurant</Card.Title>
+						<Card.Title>
+							{currentAdmin ? "Update info" : "Add information here about the restaurant"}
+						</Card.Title>
 						<Card.Text>Options with * is required</Card.Text>
 						<Form onSubmit={handleSubmit(onAddRestaurant)}>
 							<Form.Group className="mb-3">
