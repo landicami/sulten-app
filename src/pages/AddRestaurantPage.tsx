@@ -7,49 +7,91 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Restaurant } from "../types/Restaurant.types";
+import useAuth from "../hooks/useAuth";
+import { useState } from "react";
 
 const AddRestaurantPage = () => {
+	const { currentAdmin } = useAuth();
+	console.log(currentAdmin?.email);
+	const [isAdding, setIsAdding] = useState(false);
+
 	const {
 		register,
 		handleSubmit,
 		watch,
-		formState: { errors },
+		setValue,
+		reset,
+		formState: { errors, isSubmitSuccessful },
 	} = useForm<Restaurant>();
 
 	const onAddRestaurant: SubmitHandler<Restaurant> = async (data) => {
+		setIsAdding(true);
+
 		console.log(data);
+
+		//after uload is done
+		setIsAdding(false);
 	};
+
+	if (isSubmitSuccessful) {
+		reset();
+	}
 	return (
 		<Container className="p-3">
 			<Row className="justify-content-center">
 				<Col lg={6} md={8} sm={12}>
 					<Card className="p-3">
-						<Card.Title>Add information here</Card.Title>
+						<Card.Title>Add information here about the restaurant</Card.Title>
+						<Card.Text>Options with * is required</Card.Text>
 						<Form onSubmit={handleSubmit(onAddRestaurant)}>
 							<Form.Group className="mb-3">
-								<Form.Label>Name</Form.Label>
-								<Form.Control type="text" {...register("name", { required: true })} />
+								<Form.Label>Name*</Form.Label>
+								<Form.Control
+									aria-label="Add the name of the restaurant"
+									type="text"
+									{...register("name", { required: true })}
+								/>
 								{errors.name && <span className="form-required">This field is required</span>}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
-								<Form.Label>Adress</Form.Label>
+								<Form.Label>Adress*</Form.Label>
 
-								<Form.Control type="adress" {...register("address", { required: true })} />
+								<Form.Control
+									aria-label="Add the adress of the restaurant"
+									type="text"
+									{...register("address", { required: true })}
+								/>
 								{errors.address && <span className="form-required">This field is required</span>}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
-								<Form.Label>City</Form.Label>
+								<Form.Label>City*</Form.Label>
 
-								<Form.Control type="text" {...register("city", { required: true })} />
+								<Form.Control
+									aria-label="Add the city of the restaurant"
+									type="text"
+									{...register("city", { required: true })}
+								/>
 								{errors.city && <span className="form-required">This field is required</span>}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
-								<Form.Label>Category</Form.Label>
+								<Form.Label>Description</Form.Label>
+
+								<Form.Control
+									aria-label="Add the description of the restaurant"
+									as="textarea"
+									type="text"
+									{...register("description")}
+								/>
+							</Form.Group>
+
+							<Form.Group className="mb-3">
+								<Form.Label>Category*</Form.Label>
 
 								<Form.Select
+									aria-label="Add the category of the restaurant"
 									defaultValue=""
 									aria-placeholder="Select.."
 									{...register("category", { required: true })}
@@ -68,41 +110,109 @@ const AddRestaurantPage = () => {
 							</Form.Group>
 
 							<Form.Group className="mb-3">
-								<Form.Label>Offer</Form.Label>
+								<Form.Label>Offer*</Form.Label>
 
 								<Form.Check
 									type="checkbox"
 									value="lunch"
 									label="Lunch"
-									aria-label="offer"
+									aria-label="Pick lunch as an offer"
 									{...register("offer", { required: true })}
 								/>
 								<Form.Check
 									type="checkbox"
 									value="after-work"
 									label="After Work"
-									aria-label="Offer"
+									aria-label="Pick after-work as an offer"
 									{...register("offer", { required: true })}
 								/>
 								<Form.Check
 									type="checkbox"
-									value="middag/a-la-carte"
-									label="Middag/A-la-carte"
-									aria-label="Offer"
+									value="dinner/a-la-carte"
+									label="Dinner/Á-la-carte"
+									aria-label="Pick dinner as an offer"
 									{...register("offer", { required: true })}
 								/>
 								{errors.offer && <span className="form-required">Please choose an offer</span>}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
-								<Form.Label>Description:</Form.Label>
+								<Form.Label>Upload photos</Form.Label>
 
-								<Form.Control as="textarea" type="text" {...register("description")} />
+								<Form.Control
+									aria-label="Add photos of the restaurant"
+									type="file"
+									{...register("photoFiles")}
+									accept=".jpeg, .jpg, .png"
+									multiple
+								/>
 							</Form.Group>
 
-							<Button className="mt-2" type="submit">
-								Add restaurant
+							<Form.Group className="mb-3">
+								<Form.Label>Email</Form.Label>
+
+								<Form.Control
+									aria-label="Add the email of the restaurant"
+									type="email"
+									{...register("email")}
+								/>
+							</Form.Group>
+
+							<Form.Group className="mb-3">
+								<Form.Label>Phone</Form.Label>
+
+								<Form.Control
+									aria-label="Add the phonenumber of the restaurant"
+									type="tel"
+									{...register("phone")}
+								/>
+							</Form.Group>
+
+							<Form.Group className="mb-3">
+								<Form.Label>Website</Form.Label>
+
+								<Form.Control
+									aria-label="Add the website of the restaurant"
+									type="url"
+									{...register("website")}
+								/>
+							</Form.Group>
+
+							<Form.Group className="mb-3">
+								<Form.Label>Facebook</Form.Label>
+
+								<Form.Control
+									aria-label="Add the facebook of the restaurant"
+									type="url"
+									{...register("facebook")}
+								/>
+							</Form.Group>
+
+							<Form.Group className="mb-3">
+								<Form.Label>Instagram</Form.Label>
+
+								<Form.Control
+									aria-label="Add the Instagram of the restaurant"
+									type="url"
+									{...register("instagram")}
+								/>
+							</Form.Group>
+
+							<Button disabled={isAdding} className="mb-5" type="submit">
+								{isAdding ? "Adding restaurant" : "Add restaurant"}
 							</Button>
+
+							{currentAdmin && (
+								<Form.Group className="mb-3">
+									<Form.Check
+										type="checkbox"
+										label="Approved by admin"
+										aria-label="Choose this if admin approves"
+										{...register("approvedByAdmin")}
+										onChange={(e) => setValue("approvedByAdmin", e.target.checked)}
+									/>
+								</Form.Group>
+							)}
 						</Form>
 					</Card>
 				</Col>
