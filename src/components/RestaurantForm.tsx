@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -9,74 +9,55 @@ import Row from "react-bootstrap/Row";
 import { Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
-import { doc, setDoc } from "firebase/firestore";
-import { restaurantCol } from "../service/firebase";
-import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
 
-const RestaurantForm: React.FC = () => {
+interface RestaurantFormProps {
+	initialValues?: Restaurant;
+	onSave: (data: Restaurant) => Promise<void>;
+}
+
+const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }) => {
 	const { currentAdmin } = useAuth();
 	const [isAdding, setIsAdding] = useState(false);
 
 	const {
 		register,
 		handleSubmit,
-		watch,
 		setValue,
 		reset,
 		formState: { errors, isSubmitSuccessful },
-	} = useForm<Restaurant>();
+	} = useForm<Restaurant>({
+		defaultValues: {
+			...initialValues,
+		},
+	});
 
 	const onAddRestaurant: SubmitHandler<Restaurant> = async (data) => {
-		setIsAdding(true);
-		console.log(data);
-		//Create a ref to photofiles and upload it to storage, then get the url
-
 		try {
-			const docRef = doc(restaurantCol);
-
-			await setDoc(docRef, {
-				...data,
-				name: data.name,
-				approvedByAdmin: data.approvedByAdmin ?? false,
-				address: data.address,
-				city: data.city,
-				description: data.description,
-				category: data.category,
-				offer: data.offer,
-				email: data.email,
-				phone: data.phone,
-				website: data.website,
-				facebook: data.facebook,
-				instagram: data.instagram,
-			});
-			// photoFiles: urlerna?,
-
-			// longLat: LongLat;
+			setIsAdding(true);
+			await onSave(data);
 		} catch (error) {
-			console.error("Error adding restaurant", error);
-			if (error instanceof FirebaseError) {
+			if (error instanceof Error) {
 				toast.error(error.message);
+			} else {
+				toast.error("Error adding restaurant");
 			}
+		} finally {
+			setIsAdding(false);
 		}
-
-		console.log(data);
-
-		//after uload is done
-		setIsAdding(false);
-		toast.success("Added restaurant for ya <3");
-	};
-
-	if (isSubmitSuccessful) {
-		reset();
 	}
+
+	useEffect(() => {
+		reset(initialValues);
+	}, [initialValues, isSubmitSuccessful, reset])
+
 	return (
 		<Container className="p-3">
 			<Row className="justify-content-center">
 				<Col lg={6} md={8} sm={12}>
 					<Card className="p-3">
 						<Card.Title>
-							{currentAdmin ? "Update info" : "Add information here about the restaurant"}
+							Add information here about the restaurant
 						</Card.Title>
 						<Card.Text>Options with * is required</Card.Text>
 						<Form onSubmit={handleSubmit(onAddRestaurant)}>
@@ -235,7 +216,7 @@ const RestaurantForm: React.FC = () => {
 							</Form.Group>
 
 							<Button disabled={isAdding} className="mb-5" type="submit">
-								{isAdding ? "Adding restaurant" : "Add restaurant"}
+								{isAdding ? "Adding restaurant..." : "Add restaurant"}
 							</Button>
 
 							{currentAdmin && (
