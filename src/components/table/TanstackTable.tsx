@@ -1,15 +1,36 @@
 import Table from "react-bootstrap/Table";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+	ColumnDef,
+	flexRender,
+	getCoreRowModel,
+	useReactTable,
+	SortDirection,
+	SortingState,
+	getSortedRowModel,
+} from "@tanstack/react-table";
+import { useState } from "react";
 
 interface TanstackTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 }
 
+const sortingEmoji = {
+	asc: "⬆️",
+	desc: "⬇️",
+};
+
 const TanstackTable = <TData, TValue>({ columns, data }: TanstackTableProps<TData, TValue>) => {
+	const [sorting, setSorting] = useState<SortingState>([]);
+
 	const table = useReactTable({
 		data,
 		columns,
+		state: {
+			sorting,
+		},
+		onSortingChange: setSorting,
+		getSortedRowModel: getSortedRowModel(),
 		getCoreRowModel: getCoreRowModel(),
 	});
 
@@ -21,9 +42,16 @@ const TanstackTable = <TData, TValue>({ columns, data }: TanstackTableProps<TDat
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
 								<th key={header.id} colSpan={header.colSpan}>
-									{header.isPlaceholder
-										? null
-										: flexRender(header.column.columnDef.header, header.getContext())}
+									{header.isPlaceholder ? null : (
+										<div
+											className={header.column.getCanSort() ? "cursor-pointer" : ""}
+											onClick={header.column.getToggleSortingHandler()}
+										>
+											{flexRender(header.column.columnDef.header, header.getContext())}
+
+											{sortingEmoji[header.column.getIsSorted() as SortDirection] ?? null}
+										</div>
+									)}
 								</th>
 							))}
 						</tr>

@@ -38,7 +38,7 @@ const Navigation = () => {
 
 						{/* Only if Admin is logged in */}
 						{currentAdmin && (
-							<Nav.Link as={NavLink} end to="/admin-restaurant">
+							<Nav.Link as={NavLink} end to="/admin-restaurants">
 								Restaurants - Admin
 							</Nav.Link>
 						)}
