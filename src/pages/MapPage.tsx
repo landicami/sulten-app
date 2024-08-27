@@ -7,11 +7,16 @@ import {
 	Pin,
 	useMap,
 } from "@vis.gl/react-google-maps";
-import { useState } from "react";
+import { useState } from 'react';
 import Card from "react-bootstrap/Card";
+import { PlaceAutocompleteClassic } from "../components/PlaceAutocomplete";
+import MapHandler from "../components/MapHandler";
+import MarkerWithInfowindow from "../components/MapMarker";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
+	const [selectedPlace, setSelectedPlace] =
+		useState<google.maps.places.PlaceResult | null>(null);
 	const point = {
 		key: "theRocks",
 		location: { lat: 55.60587, lng: 13.00073 },
@@ -20,6 +25,8 @@ export const MapPage = () => {
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
+			<PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
+
 			<div style={{ height: "100vh", width: "50vw" }}>
 				<Map
 					defaultZoom={13}
@@ -52,6 +59,10 @@ export const MapPage = () => {
 						</InfoWindow>
 					)}
 				</Map>
+
+				<MapHandler place={selectedPlace} />
+				<MarkerWithInfowindow place={selectedPlace} />
+
 			</div>
 		</APIProvider>
 	);
