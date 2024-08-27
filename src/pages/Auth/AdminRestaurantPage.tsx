@@ -1,14 +1,21 @@
 import useAdminRestaurants from "../../hooks/useAdminRestaurants";
-import ListGroup from "react-bootstrap/ListGroup";
+import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { ColumnDef } from "@tanstack/react-table";
 import { Restaurant } from "../../types/Restaurant.types";
 import TanstackTable from "../../components/table/TanstackTable";
+import { db, restaurantCol } from "../../service/firebase";
+import { deleteDoc, doc } from "firebase/firestore";
+import { toast } from "react-toastify";
+import { FirebaseError } from "firebase/app";
+import useTipsRestaurants from "../../hooks/useTipsRestaurants";
 
 const AdminRestaurantPage = () => {
 	const { currentAdmin } = useAuth();
-	const { data: adminRestaurants, loading } = useAdminRestaurants();
+	const { data: adminRestaurants, loading: adminLoading } = useAdminRestaurants();
+	const { data: tipsRestaurants, loading: tipLoading } = useTipsRestaurants();
+
 	console.log("Data", adminRestaurants);
 
 	if (!currentAdmin) {
@@ -21,35 +28,71 @@ const AdminRestaurantPage = () => {
 			header: "Name",
 		},
 		{
-			accessorKey: "adress",
-			header: "Adress",
+			accessorKey: "address",
+			header: "Address",
 		},
 		{
 			accessorKey: "city",
 			header: "City",
 		},
+		{
+			accessorKey: "approvedByAdmin",
+			header: "Is this approved",
+		},
+		{
+			header: "Edit",
+			cell: ({ row }) => (
+				<Link to={`/restaurants/${row.original._id}`}>
+					<Button size="sm" className="btn btn-warning">
+						Edit
+					</Button>
+				</Link>
+			),
+		},
+
+		{
+			header: "Delete",
+			cell: ({ row }) => (
+				<Button
+					className="btn btn-danger"
+					size="sm"
+					type="button"
+					onClick={async () => {
+						const id = row.original._id; // Hämtar ID:t från raden
+						if (window.confirm("Are you sure you want to delete this item?")) {
+							try {
+								const docRef = doc(db, "restaurants", id);
+								await deleteDoc(docRef);
+								toast.success("Item deleted successfully!");
+							} catch (error) {
+								if (error instanceof FirebaseError) toast.error("Error deleting document");
+							}
+						}
+					}}
+				>
+					Delete
+				</Button>
+			),
+		},
 	];
+
 	return (
 		<div>
-			{loading && <p>Loading...</p>}
+			{adminLoading && <p>Loading...</p>}
+			<h1 className="mb-3">Restaurants</h1>
 
-			{adminRestaurants && <TanstackTable columns={columnDefs} data={adminRestaurants} />}
+			{adminRestaurants && adminRestaurants.length > 0 && (
+				<>
+					<h2>Admin checked</h2>
+					<TanstackTable columns={columnDefs} data={adminRestaurants} />
+				</>
+			)}
 
-			{adminRestaurants && adminRestaurants?.length > 0 && (
-				<ListGroup>
-					{adminRestaurants.map((adminRestaurant) => (
-						<ListGroup.Item key={adminRestaurant._id}>
-							<p>{adminRestaurant.name}</p>
-							<span>
-								{adminRestaurant.approvedByAdmin === false
-									? "This has to be approved by admin"
-									: "Approved"}
-							</span>
-							<br />
-							<Link to={`/restaurants/${adminRestaurant._id}`}>Edit me</Link>
-						</ListGroup.Item>
-					))}
-				</ListGroup>
+			{tipsRestaurants && tipsRestaurants.length > 0 && (
+				<>
+					<h2>Tips from tippers</h2>
+					<TanstackTable columns={columnDefs} data={tipsRestaurants} />
+				</>
 			)}
 		</div>
 	);

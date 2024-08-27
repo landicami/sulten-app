@@ -29,7 +29,7 @@ const RestaurantForm: React.FC = () => {
 
 	const onAddRestaurant: SubmitHandler<Restaurant> = async (data) => {
 		setIsAdding(true);
-
+		console.log(data);
 		//Create a ref to photofiles and upload it to storage, then get the url
 
 		try {
@@ -38,7 +38,7 @@ const RestaurantForm: React.FC = () => {
 			await setDoc(docRef, {
 				...data,
 				name: data.name,
-				approvedByAdmin: data.approvedByAdmin,
+				approvedByAdmin: data.approvedByAdmin ?? false,
 				address: data.address,
 				city: data.city,
 				description: data.description,
