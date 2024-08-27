@@ -1,6 +1,10 @@
 @import "bootstrap/scss/bootstrap";
 @import "react-toastify/scss/main";
 
+.form-required {
+	color: rgb(176, 21, 21);
+}
+
 .autocomplete-container {
-    width: 50%;
+	width: 50%;
 }

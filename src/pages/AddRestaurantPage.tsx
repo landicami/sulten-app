@@ -1,8 +1,7 @@
+import RestaurantForm from "../components/RestaurantForm";
 
 const AddRestaurantPage = () => {
-    return (
-        <div>AddRestaurantPage</div>
-    )
-}
+	return <RestaurantForm />;
+};
 
 export default AddRestaurantPage;
