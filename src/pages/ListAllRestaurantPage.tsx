@@ -46,16 +46,24 @@ const ListAllRestaurantsPage = () => {
             header: "Offer",
         },
         {
-            accessorKey: "website",
-            header: "Website",
-        },
-        {
             accessorKey: "phone",
             header: "Phone",
         },
         {
             accessorKey: "email",
             header: "Email",
+        },
+        {
+            accessorKey: "website",
+            header: "Website",
+        },
+        {
+            accessorKey: "facebook",
+            header: "Facebook",
+        },
+        {
+            accessorKey: "instagram",
+            header: "Instagram",
         },
     ]
 
@@ -71,20 +79,28 @@ const ListAllRestaurantsPage = () => {
                         {adminRestaurants.map((restaurant) => (
                             <Col xs={12} key={restaurant._id} className="mb-3">
                                 <div className="p-3 border border-secondary rounded">
-                                    <h5>{restaurant.name}</h5>
+                                    <h3 className="h5">{restaurant.name}</h3>
                                     <p><strong>Address:</strong> {restaurant.address}</p>
                                     <p><strong>City:</strong> {restaurant.city}</p>
                                     {restaurant.description && (
                                         <p><strong>Description:</strong> {restaurant.description}</p>
                                     )}
-                                    {restaurant.category && (
-                                        <p><strong>Category:</strong> {restaurant.category}</p>
+                                    <p><strong>Category:</strong> {restaurant.category}</p>
+                                    <p><strong>Offer:</strong> {restaurant.offer}</p>
+                                    {restaurant.phone && (
+                                        <p><strong>Phone:</strong> {restaurant.phone}</p>
                                     )}
-                                    {restaurant.offer && (
-                                        <p><strong>Offer:</strong> {restaurant.offer}</p>
+                                    {restaurant.email && (
+                                        <p><strong>Email:</strong> {restaurant.email}</p>
                                     )}
                                     {restaurant.website && (
                                         <p><strong>Website:</strong><a href={restaurant.website} target="_blank">{restaurant.website}</a></p>
+                                    )}
+                                    {restaurant.facebook && (
+                                        <p><strong>Facebook:</strong><a href={restaurant.facebook} target="_blank">{restaurant.facebook}</a></p>
+                                    )}
+                                    {restaurant.instagram && (
+                                        <p><strong>Instagram:</strong><a href={restaurant.instagram} target="_blank">{restaurant.instagram}</a></p>
                                     )}
                                 </div>
                             </Col>
