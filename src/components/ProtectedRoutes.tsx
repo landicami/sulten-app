@@ -1,14 +1,24 @@
-import { Navigate } from "react-router-dom";
-import { PropsWithChildren } from "react";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
-const ProtectedRoutes: React.FC<PropsWithChildren> = ({ children }) => {
+interface ProtectedRoutesProps {
+	redirect?: string;
+}
+
+const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ redirect = "/login" }) => {
 	const { currentAdmin } = useAuth();
-	if (!currentAdmin) {
-		return <Navigate to="/login" />;
-	} else {
-		return children;
-	}
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (!currentAdmin) {
+			toast.warning("You need to be logged in");
+			navigate(redirect);
+		}
+	}, [currentAdmin, navigate, redirect]);
+
+	return currentAdmin ? <Outlet /> : <Navigate to={redirect} />;
 };
 
 export default ProtectedRoutes;
