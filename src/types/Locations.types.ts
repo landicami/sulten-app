@@ -1,4 +1,4 @@
-export interface LongLat {
+export interface LatLng {
 	lat: number;
 	lng: number;
 }
@@ -16,14 +16,14 @@ export interface GoogleMapsAPIResponse {
 			formatted_address: string;
 			geometry: {
 				bounds: {
-					northeast: LongLat;
-					southwest: LongLat;
+					northeast: LatLng;
+					southwest: LatLng;
 				};
-				location: LongLat;
+				location: LatLng;
 				location_type: string;
 				viewport: {
-					northeast: LongLat;
-					southwest: LongLat;
+					northeast: LatLng;
+					southwest: LatLng;
 				};
 			};
 			place_id: string;
