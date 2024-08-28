@@ -14,7 +14,8 @@ export interface Restaurant {
 	website: string | null;
 	facebook: string | null;
 	instagram: string | null;
-	/* photoFiles: FileList; */
+	photoFiles?: FileList;
+	photoUrl: string; // seperat typ för att lagra url
 	longLat: LongLat;
 }
 
