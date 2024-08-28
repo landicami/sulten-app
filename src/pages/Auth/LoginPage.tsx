@@ -10,15 +10,15 @@ import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { LoginCredentials } from "../../types/Admin.types";
+import { LoginInfo } from "../../types/Admin.types";
 
 const LoginPage = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(false);
-    const { handleSubmit, register, formState: { errors } } = useForm<LoginCredentials>();
+    const { handleSubmit, register, formState: { errors } } = useForm<LoginInfo>();
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const onLogin: SubmitHandler<LoginCredentials> = async (data) => {
+    const onLogin: SubmitHandler<LoginInfo> = async (data) => {
         setIsLoggingIn(true);
 
         try {
