@@ -5,9 +5,9 @@ import {
 	Map,
 	MapCameraChangedEvent,
 	Pin,
-	useMap,
+	/* useMap, */
 } from "@vis.gl/react-google-maps";
-import { useState } from 'react';
+import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import { PlaceAutocompleteClassic } from "../components/PlaceAutocomplete";
 import MapHandler from "../components/MapHandler";
@@ -15,8 +15,7 @@ import MarkerWithInfowindow from "../components/MapMarker";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
-	const [selectedPlace, setSelectedPlace] =
-		useState<google.maps.places.PlaceResult | null>(null);
+	const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 	const point = {
 		key: "theRocks",
 		location: { lat: 55.60587, lng: 13.00073 },
@@ -62,7 +61,6 @@ export const MapPage = () => {
 
 				<MapHandler place={selectedPlace} />
 				<MarkerWithInfowindow place={selectedPlace} />
-
 			</div>
 		</APIProvider>
 	);
