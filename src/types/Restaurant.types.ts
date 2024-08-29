@@ -15,7 +15,7 @@ export interface Restaurant {
 	facebook: string | null;
 	instagram: string | null;
 	photoUrls: string[]; // seperat typ för att lagra url
-	longLat: LongLat;
+	longLat: LatLng;
 }
 
 export interface AddRestaurantForm {
@@ -33,7 +33,7 @@ export interface AddRestaurantForm {
 	facebook: string | null;
 	instagram: string | null;
 	photoFiles: FileList;
-	longLat: LongLat;
+	longLat: LatLng;
 }
 
 export type NewRestaurant = Omit<Restaurant, "_id">;
