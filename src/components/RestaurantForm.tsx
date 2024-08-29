@@ -10,7 +10,7 @@ import { Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface RestaurantFormProps {
 	initialValues?: Restaurant;
@@ -20,6 +20,7 @@ interface RestaurantFormProps {
 const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }) => {
 	const { currentAdmin } = useAuth();
 	const [isAdding, setIsAdding] = useState(false);
+	const navigate = useNavigate();
 
 	const {
 		register,
@@ -33,10 +34,13 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		},
 	});
 
-	const onAddRestaurant: SubmitHandler<Restaurant> = async (data) => {
+	const onAddRestaurant: SubmitHandler<Restaurant> = (data) => {
 		try {
 			setIsAdding(true);
-			await onSave(data);
+			onSave(data);
+			toast.success("Restaurant added");
+			navigate(-1);
+
 		} catch (error) {
 			if (error instanceof Error) {
 				toast.error(error.message);
