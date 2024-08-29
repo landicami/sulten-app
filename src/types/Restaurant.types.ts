@@ -1,4 +1,4 @@
-import { LongLat } from "./Locations.types";
+import { LatLng } from "./Locations.types";
 
 export interface Restaurant {
 	_id: string;
@@ -15,7 +15,7 @@ export interface Restaurant {
 	facebook: string | null;
 	instagram: string | null;
 	/* photoFiles: FileList; */
-	longLat: LongLat;
+	longLat: LatLng;
 }
 
 export type NewRestaurant = Omit<Restaurant, "_id">;

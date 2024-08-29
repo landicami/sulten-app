@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import { ColumnDef } from "@tanstack/react-table";
 import { Restaurant } from "../../types/Restaurant.types";
 import TanstackTable from "../../components/table/TanstackTable";
-import { db, restaurantCol } from "../../service/firebase";
+import { db } from "../../service/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { FirebaseError } from "firebase/app";
@@ -78,7 +78,7 @@ const AdminRestaurantPage = () => {
 
 	return (
 		<div>
-			{adminLoading && <p>Loading...</p>}
+			{adminLoading && tipLoading && <p>Loading...</p>}
 			<h1 className="mb-3">Restaurants</h1>
 
 			{adminRestaurants && adminRestaurants.length > 0 && (
