@@ -6,7 +6,7 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import { Restaurant } from "../types/Restaurant.types";
+import { AddRestaurantForm, Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -14,7 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 interface RestaurantFormProps {
 	initialValues?: Restaurant;
-	onSave: (data: Restaurant) => Promise<void>;
+	onSave: (data: AddRestaurantForm) => Promise<void>;
 }
 
 const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }) => {
@@ -28,19 +28,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		setValue,
 		reset,
 		formState: { errors, isSubmitSuccessful },
-	} = useForm<Restaurant>({
+	} = useForm<AddRestaurantForm>({
 		defaultValues: {
 			...initialValues,
 		},
 	});
 
-	const onAddRestaurant: SubmitHandler<Restaurant> = (data) => {
+	const onAddRestaurant: SubmitHandler<AddRestaurantForm> = (data) => {
 		try {
 			setIsAdding(true);
 			onSave(data);
-			toast.success("Restaurant added");
 			navigate(-1);
-
 		} catch (error) {
 			if (error instanceof Error) {
 				toast.error(error.message);

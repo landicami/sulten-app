@@ -1,14 +1,14 @@
 import { doc, setDoc } from "firebase/firestore";
 import RestaurantForm from "../components/RestaurantForm";
 import { restaurantCol, storage } from "../service/firebase";
-import { Restaurant } from "../types/Restaurant.types";
+import { AddRestaurantForm } from "../types/Restaurant.types";
 import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 
 const AddRestaurantPage = () => {
-	const addResturant = async (data: Restaurant) => {
+	const addResturant = async (data: AddRestaurantForm) => {
 		const photoUrls: string[] = [];
 		const photoId = uuidv4();
 
