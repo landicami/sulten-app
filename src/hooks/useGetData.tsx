@@ -10,7 +10,7 @@ const useGetData = () => {
 	const [isError, setIsError] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const getLocationData = async (queryType: useGetDataType) => {
+	const getLocationData = async (queryType: useGetDataType, query: string) => {
 		setData(null);
 		setError(null);
 		setIsError(false);
@@ -18,7 +18,7 @@ const useGetData = () => {
 
 		if (queryType === "address") {
 			try {
-				const res = await getGeocoding(queryType);
+				const res = await getGeocoding(query);
 				setData(res);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : "An unknown error occurred");
@@ -27,7 +27,7 @@ const useGetData = () => {
 
 		if (queryType === "latlng") {
 			try {
-				const res = await getReverseGeocoding(queryType);
+				const res = await getReverseGeocoding(query);
 				setData(res);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : "An unknown error occurred");
