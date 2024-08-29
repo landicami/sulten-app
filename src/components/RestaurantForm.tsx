@@ -6,7 +6,7 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import { Restaurant } from "../types/Restaurant.types";
+import { AddRestaurantForm, Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -14,7 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 interface RestaurantFormProps {
 	initialValues?: Restaurant;
-	onSave: (data: Restaurant) => Promise<void>;
+	onSave: (data: AddRestaurantForm) => Promise<void>;
 }
 
 const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }) => {
@@ -28,19 +28,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		setValue,
 		reset,
 		formState: { errors, isSubmitSuccessful },
-	} = useForm<Restaurant>({
+	} = useForm<AddRestaurantForm>({
 		defaultValues: {
 			...initialValues,
 		},
 	});
 
-	const onAddRestaurant: SubmitHandler<Restaurant> = (data) => {
+	const onAddRestaurant: SubmitHandler<AddRestaurantForm> = (data) => {
 		try {
 			setIsAdding(true);
 			onSave(data);
-			toast.success("Restaurant added");
 			navigate(-1);
-
 		} catch (error) {
 			if (error instanceof Error) {
 				toast.error(error.message);
@@ -50,20 +48,18 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		} finally {
 			setIsAdding(false);
 		}
-	}
+	};
 
 	useEffect(() => {
 		reset(initialValues);
-	}, [initialValues, isSubmitSuccessful, reset])
+	}, [initialValues, isSubmitSuccessful, reset]);
 
 	return (
 		<Container className="p-3">
 			<Row className="justify-content-center">
 				<Col lg={6} md={8} sm={12}>
 					<Card className="p-3">
-						<Card.Title>
-							Add information here about the restaurant
-						</Card.Title>
+						<Card.Title>Add information here about the restaurant</Card.Title>
 						<Card.Text>Options with * is required</Card.Text>
 						<Form onSubmit={handleSubmit(onAddRestaurant)}>
 							<Form.Group className="mb-3">
@@ -76,7 +72,9 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 										minLength: 1,
 									})}
 								/>
-								{errors.name && <span className="form-required">This field requires at least 1 char</span>}
+								{errors.name && (
+									<span className="form-required">This field requires at least 1 char</span>
+								)}
 							</Form.Group>
 
 							<Form.Group className="mb-3">
@@ -161,7 +159,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 								{errors.offer && <span className="form-required">Please choose an offer</span>}
 							</Form.Group>
 
-							{/* <Form.Group className="mb-3">
+							<Form.Group className="mb-3">
 								<Form.Label>Upload photos</Form.Label>
 
 								<Form.Control
@@ -171,7 +169,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 									accept=".jpeg, .jpg, .png"
 									multiple
 								/>
-							</Form.Group> */}
+							</Form.Group>
 
 							<Form.Group className="mb-3">
 								<Form.Label>Email</Form.Label>
@@ -193,9 +191,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 										pattern: {
 											value: /^\+?[0-9]{8,}$/,
 											message: "You need to add at least 8 numbers",
-										}
-									},
-									)}
+										},
+									})}
 								/>
 								{errors.phone && <span className="form-required">{errors.phone.message}</span>}
 							</Form.Group>
@@ -234,10 +231,15 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 								{isAdding ? "Adding restaurant..." : "Add restaurant"}
 							</Button>
 
-							{currentAdmin
-								? (<Link to="/admin-restaurants"><Button>Adminpage</Button></Link>)
-								: (<Link to="/"><Button>Map</Button></Link>)
-							}
+							{currentAdmin ? (
+								<Link to="/admin-restaurants">
+									<Button>Adminpage</Button>
+								</Link>
+							) : (
+								<Link to="/">
+									<Button>Map</Button>
+								</Link>
+							)}
 
 							{currentAdmin && (
 								<Form.Group className="mb-3">

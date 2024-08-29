@@ -1,44 +1,62 @@
 import { doc, setDoc } from "firebase/firestore";
 import RestaurantForm from "../components/RestaurantForm";
-import { restaurantCol } from "../service/firebase";
-import { Restaurant } from "../types/Restaurant.types";
+import { restaurantCol, storage } from "../service/firebase";
+import { AddRestaurantForm } from "../types/Restaurant.types";
 import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
 
 const AddRestaurantPage = () => {
+	const addResturant = async (data: AddRestaurantForm) => {
+		const photoUrls: string[] = [];
+		const photoId = uuidv4();
 
-    const addResturant = async (data: Restaurant) => {
-        try {
-            const docRef = doc(restaurantCol);
+		if (data.photoFiles && data.photoFiles.length > 0) {
+			const photos = Array.from(data.photoFiles);
 
-            await setDoc(docRef, {
-                ...data,
-                name: data.name.trim(),
-                approvedByAdmin: data.approvedByAdmin ?? false,
-                address: data.address.trim(),
-                city: data.city.trim(),
-                description: data.description,
-                category: data.category,
-                offer: data.offer,
-                email: data.email,
-                phone: data.phone,
-                website: data.website,
-                facebook: data.facebook,
-                instagram: data.instagram,
-            });
+			const uploadPromises = photos.map(async (photo) => {
+				const photoFileRef = ref(storage, `restaurantsPhotos/${photoId}/${photo.name}`);
+				const uploadPhoto = uploadBytesResumable(photoFileRef, photo);
 
-            toast.success("Submitted restaurant 🦄");
+				await uploadPhoto;
+				const url = await getDownloadURL(photoFileRef);
+				photoUrls.push(url);
+			});
 
-        } catch (error) {
-            console.error("Error adding restaurant", error);
-            if (error instanceof FirebaseError) {
-                toast.error(error.message);
-            }
-        }
+			await Promise.all(uploadPromises);
+		}
 
-        console.log(data);
-    }
-    return <RestaurantForm onSave={addResturant} />;
+		try {
+			const docRef = doc(restaurantCol);
+			const { photoFiles, ...restData } = data;
+
+			await setDoc(docRef, {
+				...restData,
+				name: data.name.trim(),
+				approvedByAdmin: data.approvedByAdmin ?? false,
+				address: data.address.trim(),
+				city: data.city.trim(),
+				description: data.description,
+				category: data.category,
+				offer: data.offer,
+				email: data.email,
+				phone: data.phone,
+				website: data.website,
+				facebook: data.facebook,
+				instagram: data.instagram,
+				photoUrls: photoUrls,
+			});
+
+			toast.success("Submitted restaurant 🦄");
+		} catch (error) {
+			console.error("Error adding restaurant", error);
+			if (error instanceof FirebaseError) {
+				toast.error(error.message);
+			}
+		}
+	};
+	return <RestaurantForm onSave={addResturant} />;
 };
 
 export default AddRestaurantPage;
