@@ -6,28 +6,33 @@ import RestaurantForm from "../../components/RestaurantForm";
 import useRestaurant from "../../hooks/useRestaurant";
 
 const EditRestaurantPage = () => {
-	const { id } = useParams();
-	const { data: resturant, loading } = useRestaurant(id as string);
+    const { id } = useParams();
+    const { data: resturant, loading } = useRestaurant(id);
 
-	const updateResturant = async (data: Restaurant) => {
-		const docRef = doc(restaurantCol, id);
-		const { photoFiles, ...restData } = data;
+    const updateResturant = async (data: Restaurant) => {
+
+        if (!id) {
+            throw new Error("No id provided");
+            return;
+        }
+        try {
+            const docRef = doc(restaurantCol, id);
 
 		await updateDoc(docRef, {
 			...restData,
 		});
 	};
 
-	if (loading || !resturant) {
-		return <p>Loading...</p>;
-	}
+    if (loading || !resturant) {
+        return <p>Loading...</p>
+    }
 
-	return (
-		<div>
-			<h3>Edit</h3>
-			<RestaurantForm initialValues={resturant} onSave={updateResturant} />
-		</div>
-	);
-};
+    return (
+        <div>
+            <h3>Edit</h3>
+            <RestaurantForm initialValues={resturant} onSave={updateResturant} />
+        </div>
+    )
+}
 
 export default EditRestaurantPage;
