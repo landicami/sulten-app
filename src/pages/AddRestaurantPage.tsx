@@ -6,11 +6,19 @@ import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
+import { getGeocoding } from "../service/GoogleMaps_API";
 
 const AddRestaurantPage = () => {
 	const addResturant = async (data: AddRestaurantForm) => {
 		const photoUrls: string[] = [];
 		const photoId = uuidv4();
+
+		// geocode address into lat/lng
+		const geocodeRes = await getGeocoding(data.address + ", " + data.city);
+		if (!geocodeRes.results[0].geometry.location.lat || !geocodeRes.results[0].geometry.location.lng) {
+			toast.error("This is not the address you're looking for");
+			return;
+		}
 
 		if (data.photoFiles && data.photoFiles.length > 0) {
 			const photos = Array.from(data.photoFiles);
