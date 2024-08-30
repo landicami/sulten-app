@@ -7,11 +7,10 @@ import {
 	Pin,
 	/* useMap, */
 } from "@vis.gl/react-google-maps";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import { PlaceAutocompleteClassic } from "../components/PlaceAutocomplete";
 import MapHandler from "../components/MapHandler";
-import MarkerWithInfowindow from "../components/MapMarker";
 import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
@@ -19,13 +18,10 @@ import Button from "react-bootstrap/Button";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
+	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
 	const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
-	/* const point = {
-		key: "theRocks",
-		location: { lat: 55.60587, lng: 13.00073 },
-	}; */
 
 	const { data: restaurants } = useAdminRestaurants();
 
@@ -41,8 +37,21 @@ export const MapPage = () => {
 		setInfoRestaurant(null);
 	};
 
-	console.log("Open info: ", openInfo);
-	console.log("Open info location: ", openInfoLocation);
+	useEffect(() => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					const { latitude, longitude } = position.coords;
+					setUserLocation({ lat: latitude, lng: longitude });
+				},
+				(error) => {
+					console.error("Error obtaining geolocation: ", error);
+				}
+			);
+		} else {
+			console.error("Geolocation is not supported by this browser.");
+		}
+	}, []);
 
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
@@ -51,8 +60,8 @@ export const MapPage = () => {
 
 			<div style={{ height: "100vh", width: "50vw" }}>
 				<Map
-					defaultZoom={13}
-					defaultCenter={{ lat: 55.60587, lng: 13.00073 }} //ens geolocation
+					defaultZoom={15}
+					defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 					onCameraChanged={(ev: MapCameraChangedEvent) =>
 						console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom)
@@ -101,7 +110,6 @@ export const MapPage = () => {
 				</Map>
 
 				<MapHandler place={selectedPlace} />
-				<MarkerWithInfowindow place={selectedPlace} />
 			</div>
 		</APIProvider>
 	);
