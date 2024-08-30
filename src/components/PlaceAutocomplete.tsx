@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
+import { useSearchParams } from "react-router-dom";
 
 interface PlaceAutocompleteClassicProps {
 	onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
@@ -11,6 +12,8 @@ export const PlaceAutocompleteClassic: React.FC<PlaceAutocompleteClassicProps> =
 	const [placeAutocomplete, setPlaceAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const places = useMapsLibrary("places");
+	const [searchParams, setSearchParams] = useSearchParams();
+	const citySearch = searchParams.get("city");
 
 	useEffect(() => {
 		if (!places || !inputRef.current) return;
@@ -27,7 +30,12 @@ export const PlaceAutocompleteClassic: React.FC<PlaceAutocompleteClassicProps> =
 
 		placeAutocomplete.addListener("place_changed", () => {
 			onPlaceSelect(placeAutocomplete.getPlace());
+			const place = placeAutocomplete.getPlace();
+			if (place.name) {
+				setSearchParams({ city: place.name });
+			}
 		});
+		console.log("CitySearch is:", citySearch);
 	}, [onPlaceSelect, placeAutocomplete]);
 
 	return (
