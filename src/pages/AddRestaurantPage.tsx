@@ -12,11 +12,30 @@ const AddRestaurantPage = () => {
 	const addResturant = async (data: AddRestaurantForm) => {
 		const photoUrls: string[] = [];
 		const photoId = uuidv4();
+		let latLng = {};
 
 		// geocode address into lat/lng
-		const geocodeRes = await getGeocoding(data.address + ", " + data.city);
-		if (!geocodeRes.results[0].geometry.location.lat || !geocodeRes.results[0].geometry.location.lng) {
-			toast.error("This is not the address you're looking for");
+		try {
+			const geoCodeRes = await getGeocoding(data.address + ", " + data.city);
+
+			if (geoCodeRes.status === "ZERO_RESULTS") {
+				toast.error("This is not the address you are looking for ❌");
+				return;
+			}
+
+			latLng = {
+				lat: geoCodeRes.results[0].geometry.location.lat,
+				lng: geoCodeRes.results[0].geometry.location.lng,
+			};
+		} catch (err) {
+			if (err instanceof Error) {
+				console.log(err.message, "❌");
+				toast.error("This is not the address you are looking for ❌");
+			} else {
+				console.log("❌ error...");
+				toast.error("This is not the address you are looking for ❌");
+			}
+
 			return;
 		}
 
@@ -54,6 +73,7 @@ const AddRestaurantPage = () => {
 				facebook: data.facebook,
 				instagram: data.instagram,
 				photoUrls: photoUrls,
+				location: latLng,
 			});
 
 			toast.success("Submitted restaurant 🦄");

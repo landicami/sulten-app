@@ -40,6 +40,14 @@ const AdminRestaurantPage = () => {
 			header: "Is this approved",
 		},
 		{
+			accessorKey: "location.lat",
+			header: "Lat",
+		},
+		{
+			accessorKey: "location.lng",
+			header: "Lng",
+		},
+		{
 			header: "Edit",
 			cell: ({ row }) => (
 				<Link to={`/restaurants/${row.original._id}`}>
