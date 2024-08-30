@@ -12,6 +12,22 @@ const AddRestaurantPage = () => {
 	const addResturant = async (data: AddRestaurantForm) => {
 		const photoUrls: string[] = [];
 		const photoId = uuidv4();
+
+		if (data.photoFiles && data.photoFiles.length > 0) {
+			const photos = Array.from(data.photoFiles);
+
+			const uploadPromises = photos.map(async (photo) => {
+				const photoFileRef = ref(storage, `restaurantsPhotos/${photoId}/${photo.name}`);
+				const uploadPhoto = uploadBytesResumable(photoFileRef, photo);
+
+				await uploadPhoto;
+				const url = await getDownloadURL(photoFileRef);
+				photoUrls.push(url);
+			});
+
+			await Promise.all(uploadPromises);
+		}
+
 		let latLng = {};
 
 		// geocode address into lat/lng
@@ -35,23 +51,6 @@ const AddRestaurantPage = () => {
 				console.log("❌ error...");
 				toast.error("This is not the address you are looking for ❌");
 			}
-
-			return;
-		}
-
-		if (data.photoFiles && data.photoFiles.length > 0) {
-			const photos = Array.from(data.photoFiles);
-
-			const uploadPromises = photos.map(async (photo) => {
-				const photoFileRef = ref(storage, `restaurantsPhotos/${photoId}/${photo.name}`);
-				const uploadPhoto = uploadBytesResumable(photoFileRef, photo);
-
-				await uploadPhoto;
-				const url = await getDownloadURL(photoFileRef);
-				photoUrls.push(url);
-			});
-
-			await Promise.all(uploadPromises);
 		}
 
 		try {
