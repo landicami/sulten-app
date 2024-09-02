@@ -15,6 +15,7 @@ import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
+import SearchMapForm from "../components/SearchMapForm";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -56,8 +57,8 @@ export const MapPage = () => {
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
-			<PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
-
+			{/* <PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} /> */}
+			<SearchMapForm />
 			<div style={{ height: "100vh", width: "50vw" }}>
 				<Map
 					defaultZoom={15}
@@ -109,7 +110,7 @@ export const MapPage = () => {
 					)}
 				</Map>
 
-				<MapHandler place={selectedPlace} />
+				{/* <MapHandler place={selectedPlace} /> */}
 			</div>
 		</APIProvider>
 	);
