@@ -10,19 +10,31 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { FirebaseError } from "firebase/app";
 import useTipsRestaurants from "../../hooks/useTipsRestaurants";
+import { Admin } from "../../types/Admin.types";
+import useAdmins from "../../hooks/useAdmins";
 
 const AdminRestaurantPage = () => {
 	const { currentAdmin } = useAuth();
 	const { data: adminRestaurants, loading: adminLoading } = useAdminRestaurants();
 	const { data: tipsRestaurants, loading: tipLoading } = useTipsRestaurants();
-
-	console.log("Data", adminRestaurants);
+	const { data: admins, loading: adminsLoading } = useAdmins();
 
 	if (!currentAdmin) {
 		<p>You need to be logged in as admin to see this page</p>;
 	}
 
-	const columnDefs: ColumnDef<Restaurant>[] = [
+	const adminColumnDefs: ColumnDef<Admin>[] = [
+		{
+			accessorKey: "name",
+			header: "Name",
+		},
+		{
+			accessorKey: "email",
+			header: "Email",
+		},
+	];
+
+	const restaurantColumnDefs: ColumnDef<Restaurant>[] = [
 		{
 			accessorKey: "name",
 			header: "Name",
@@ -57,7 +69,6 @@ const AdminRestaurantPage = () => {
 				</Link>
 			),
 		},
-
 		{
 			header: "Delete",
 			cell: ({ row }) => (
@@ -86,20 +97,27 @@ const AdminRestaurantPage = () => {
 
 	return (
 		<div>
-			{adminLoading && tipLoading && <p>Loading...</p>}
+			{adminLoading && tipLoading && adminsLoading && <p>Loading...</p>}
 			<h1 className="mb-3">Restaurants</h1>
 
 			{adminRestaurants && adminRestaurants.length > 0 && (
 				<>
-					<h2>Admin checked</h2>
-					<TanstackTable columns={columnDefs} data={adminRestaurants} />
+					<h2 className="mb-3">Admin checked</h2>
+					<TanstackTable columns={restaurantColumnDefs} data={adminRestaurants} />
 				</>
 			)}
 
 			{tipsRestaurants && tipsRestaurants.length > 0 && (
 				<>
-					<h2>Tips from tippers</h2>
-					<TanstackTable columns={columnDefs} data={tipsRestaurants} />
+					<h2 className="mb-3">Tips from tippers</h2>
+					<TanstackTable columns={restaurantColumnDefs} data={tipsRestaurants} />
+				</>
+			)}
+
+			{admins && admins.length > 0 && (
+				<>
+					<h2 className="mb-3">Admins </h2>
+					<TanstackTable columns={adminColumnDefs} data={admins} />
 				</>
 			)}
 		</div>
