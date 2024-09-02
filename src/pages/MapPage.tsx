@@ -16,6 +16,9 @@ import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
 import SearchMapForm from "../components/SearchMapForm";
+import { useSearchParams } from "react-router-dom";
+import { getGeocoding } from "../service/GoogleMaps_API";
+import { toast } from "react-toastify";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -25,6 +28,12 @@ export const MapPage = () => {
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
 
 	const { data: restaurants } = useAdminRestaurants();
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const cityParamSearch = searchParams.get("city") || "";
+
+	const [mapCenterAfterSearch, setMapCenterAfterSearch] = useState<{ lat: number; lng: number } | null>(null);
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
@@ -37,6 +46,39 @@ export const MapPage = () => {
 		setOpenInfoLocation(null);
 		setInfoRestaurant(null);
 	};
+
+	const onCitySearch = (city: string) => {
+		setSearchParams({ city: city });
+	};
+
+	const searchCityWithApi = async (city: string) => {
+		try {
+			const cityFromApi = await getGeocoding(city);
+			console.log("City from api", cityFromApi);
+
+			if (cityFromApi.status === "OK" && cityFromApi.results) {
+				setMapCenterAfterSearch({
+					lat: cityFromApi.results[0].geometry.location.lat,
+					lng: cityFromApi.results[0].geometry.location.lng,
+				});
+				console.log("Searched for", cityFromApi.results[0].formatted_address);
+			} else {
+				toast.error("Please try another city, could not find that one");
+			}
+		} catch (err) {
+			if (err instanceof Error) console.error("Error fetching city data:", err.message);
+
+			toast.error("An error occurred while searching for the city. Please try again.");
+		}
+	};
+
+	console.log(mapCenterAfterSearch);
+
+	useEffect(() => {
+		if (cityParamSearch) {
+			searchCityWithApi(cityParamSearch);
+		}
+	}, [cityParamSearch]);
 
 	useEffect(() => {
 		if (navigator.geolocation) {
@@ -58,11 +100,12 @@ export const MapPage = () => {
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
 			{/* <PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} /> */}
-			<SearchMapForm />
+			<SearchMapForm onCitySearch={onCitySearch} />
 			<div style={{ height: "100vh", width: "50vw" }}>
 				<Map
 					defaultZoom={15}
-					defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
+					center={mapCenterAfterSearch || userLocation || { lat: 55.6071256, lng: 13.0212773 }}
+					// defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 					onCameraChanged={(ev: MapCameraChangedEvent) =>
 						console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom)
