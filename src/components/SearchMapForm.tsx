@@ -5,12 +5,19 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
+import { useSearchParams } from "react-router-dom";
 
-const SearchMapForm = () => {
+interface SearchMapFormProps {
+	onCitySearch: (city: string) => void;
+}
+
+const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch }) => {
 	const [citySearch, setCitySearch] = useState("");
+
 	const handleCitySearch = (e: React.FormEvent) => {
 		e.preventDefault();
 		console.log("Searched for", citySearch);
+		onCitySearch(citySearch);
 		setCitySearch("");
 	};
 	return (
