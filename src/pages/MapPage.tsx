@@ -15,6 +15,8 @@ import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
+import MapNavigation from "../components/MapNavigation";
+import { toast } from "react-toastify";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -22,6 +24,7 @@ export const MapPage = () => {
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
 	const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
+	const [navigationDestination, setNavigationDestination] = useState<LatLng | undefined>(undefined);
 
 	const { data: restaurants } = useAdminRestaurants();
 
@@ -37,19 +40,30 @@ export const MapPage = () => {
 		setInfoRestaurant(null);
 	};
 
+	const handleNavigate = () => {
+		if (infoRestaurant && userLocation) {
+			return infoRestaurant.location;
+		}
+	};
+
 	useEffect(() => {
 		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
+			const watchId = navigator.geolocation.watchPosition(
 				(position) => {
 					const { latitude, longitude } = position.coords;
 					setUserLocation({ lat: latitude, lng: longitude });
 				},
 				(error) => {
-					console.error("Error obtaining geolocation: ", error);
+					toast.error(error.message);
 				}
 			);
+
+			return () => {
+				setUserLocation(null);
+				navigator.geolocation.clearWatch(watchId);
+			};
 		} else {
-			console.error("Geolocation is not supported by this browser.");
+			toast.error("Your browser does not support us getting your location.");
 		}
 	}, []);
 
@@ -58,10 +72,10 @@ export const MapPage = () => {
 			<h1>Our map</h1>
 			<PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
 
-			<div style={{ height: "100vh", width: "50vw" }}>
+			<div style={{ height: "100vh", width: "100%" }}>
 				<Map
 					defaultZoom={15}
-					defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
+					defaultCenter={userLocation ?? { lat: 0, lng: 0 }}
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 					onCameraChanged={(ev: MapCameraChangedEvent) =>
 						console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom)
@@ -96,19 +110,25 @@ export const MapPage = () => {
 									<Card.Text>{infoRestaurant.offer}</Card.Text>
 								</Card.Body>
 								<Card.Footer>
-									{infoRestaurant.website ? (
-										<Button>
-											<a href={infoRestaurant.website}></a>Besök hemsidan
-										</Button>
-									) : (
-										<p>Det finns ingen hemsida</p>
-									)}
+									<Button
+										variant="primary"
+										onClick={() => {
+											const destination = handleNavigate();
+											setNavigationDestination(destination);
+										}}
+										disabled={!userLocation}
+									>
+										Navigate to eat here!
+									</Button>
 								</Card.Footer>
 							</Card>
 						</InfoWindow>
 					)}
 				</Map>
 
+				{userLocation && navigationDestination && (
+					<MapNavigation userLocation={userLocation} destination={navigationDestination} />
+				)}
 				<MapHandler place={selectedPlace} />
 			</div>
 		</APIProvider>
