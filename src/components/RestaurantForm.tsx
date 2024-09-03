@@ -166,7 +166,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 									aria-label="Add photos of the restaurant"
 									type="file"
 									{...register("photoFiles")}
-									accept=".jpeg, .jpg, .png"
+									accept=".jpeg, .jpg, .png, .gif"
 									multiple
 								/>
 							</Form.Group>

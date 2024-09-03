@@ -66,6 +66,7 @@ export const MapPage = () => {
 				});
 
 				setShouldCenterMap(true);
+				setCity(cityFromApi.results[0].formatted_address);
 
 				console.log("Searched for", cityFromApi.results[0].formatted_address);
 			} else {
