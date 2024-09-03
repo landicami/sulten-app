@@ -22,6 +22,7 @@ const UpdateProfilePage = () => {
     const { id } = useParams();
     const { data: admin } = useAdmin(id);
     const {
+        currentAdmin,
         updateInfo,
         setName,
         setEmail,
@@ -33,8 +34,8 @@ const UpdateProfilePage = () => {
     } = useAuth();
     const { handleSubmit, register, watch, formState: { errors } } = useForm<UpdateAdminFormData>({
         defaultValues: {
-            email: userEmail ?? "",
-            name: userName ?? "",
+            email: currentAdmin?.email ?? "",
+            name: currentAdmin?.displayName ?? "",
         }
     });
 
@@ -126,7 +127,7 @@ const UpdateProfilePage = () => {
                             <div>
                                 <div className="d-flex justify-content-center mb-2">
                                     <Image
-                                        src={userPhoto || "https://placehold.co/600x400?text=No+Image+Yet+:("}
+                                        src={currentAdmin?.photoURL || "https://placehold.co/600x400?text=No+Image+Yet+:("}
                                         fluid
                                         roundedCircle
                                         className="img-square w-75"
