@@ -3,7 +3,6 @@ import {
 	AdvancedMarker,
 	InfoWindow,
 	Map,
-	MapCameraChangedEvent,
 	Pin,
 	/* useMap, */
 } from "@vis.gl/react-google-maps";
@@ -16,7 +15,7 @@ import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
-import useRestaurantsInCity from "../hooks/useRestaurantsInCity";
+import useGetRestuarantByCity from "../hooks/useGetRestuarantByCity";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -24,10 +23,11 @@ export const MapPage = () => {
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
 	const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
+	const [city, setCity] = useState("Malmö");
 
 	const { data: restaurants } = useAdminRestaurants();
 
-	const { changeCity, restaurants: restaurantsInCity, city } = useRestaurantsInCity();
+	const { data } = useGetRestuarantByCity(city);
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
@@ -49,7 +49,8 @@ export const MapPage = () => {
 
 		if (postalTown.length > 0) {
 			const newcity = postalTown[0].long_name;
-			changeCity(newcity);
+			console.log(newcity);
+			setCity(newcity);
 		} else {
 			console.error("No postal town found in the response.");
 		}
@@ -57,12 +58,15 @@ export const MapPage = () => {
 
 	console.log("🏙️ city: ", city);
 
-	if (!restaurantsInCity) {
+	if (!data) {
 		console.log(`🌮 restaurants in ${city}: is null ❌`);
-	} else if (restaurantsInCity.length <= 0) {
-		console.log(`🌮 restaurants in ${city}: is 0 ✅`);
+	} else if (data.length <= 0) {
+		console.log("Data is not null, but no city yet :) ", data);
 	} else {
-		console.log(`1st 🌮 restaurants in ${city}: is ${restaurantsInCity[0].name} ✅`);
+		console.log(`Length 🌮 restaurants in ${city}: is ${data.length} ✅`);
+		console.log(`1st 🌮 restaurants in ${city}: is ${data[0].name} ✅`);
+		console.log(`1st 🌮 restaurants in ${city}: is ${data[0]._id} ✅`);
+		console.log(`1st 🌮 restaurants in ${city}: is ${data[0].address} ✅`);
 	}
 
 	useEffect(() => {
@@ -83,8 +87,6 @@ export const MapPage = () => {
 		}
 	}, []);
 
-	useEffect(() => {}, [city]);
-
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
@@ -95,9 +97,6 @@ export const MapPage = () => {
 					defaultZoom={15}
 					defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
-					onCameraChanged={(ev: MapCameraChangedEvent) =>
-						console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom)
-					}
 				>
 					{restaurants &&
 						restaurants.map((restaurant) => {
