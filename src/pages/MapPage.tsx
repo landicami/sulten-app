@@ -8,8 +8,6 @@ import {
 } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
-import { PlaceAutocompleteClassic } from "../components/PlaceAutocomplete";
-import MapHandler from "../components/MapHandler";
 import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
@@ -25,7 +23,6 @@ export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
 	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
-	const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
 	const [city, setCity] = useState("Malmö");
 
