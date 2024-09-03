@@ -2,7 +2,7 @@ import { orderBy, where } from "firebase/firestore";
 import { restaurantCol } from "../service/firebase";
 import useStreamCollection from "./useStreamCollection";
 
-const useGetRestuarantByCity = (city: string) => {
+const useGetRestuarantsByCity = (city: string) => {
 	return useStreamCollection(
 		restaurantCol,
 		where("approvedByAdmin", "==", true),
@@ -11,4 +11,4 @@ const useGetRestuarantByCity = (city: string) => {
 	);
 };
 
-export default useGetRestuarantByCity;
+export default useGetRestuarantsByCity;

@@ -11,7 +11,7 @@ import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
-import useGetRestuarantByCity from "../hooks/useGetRestuarantByCity";
+import useGetRestuarantsByCity from "../hooks/useGetRestuarantsByCity";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -30,7 +30,7 @@ export const MapPage = () => {
 
 	const [mapCenterAfterSearch, setMapCenterAfterSearch] = useState<{ lat: number; lng: number } | null>(null);
 
-	const { data } = useGetRestuarantByCity(city);
+	const { data } = useGetRestuarantsByCity(city);
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
