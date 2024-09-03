@@ -97,7 +97,7 @@ export const MapPage = () => {
 
 					{openInfo && infoRestaurant && (
 						<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
-							<Card key={infoRestaurant._id}>
+							<Card key={infoRestaurant._id} className="resturant-info-card">
 								{infoRestaurant.photoUrls.length === 0 ? (
 									<Card.Img variant="top" src="https://placehold.co/600x400?text=No+Image+Yet+:(" />
 								) : (
@@ -106,10 +106,10 @@ export const MapPage = () => {
 								<Card.Body>
 									<Card.Title>{infoRestaurant.name}</Card.Title>
 									<Card.Text>{infoRestaurant.description}</Card.Text>
-									<Card.Text>{infoRestaurant.category}</Card.Text>
-									<Card.Text>{infoRestaurant.offer}</Card.Text>
+									<Card.Text><strong>Category:</strong> {infoRestaurant.category}</Card.Text>
+									<Card.Text><strong>Offer:</strong> {infoRestaurant.offer}</Card.Text>
 								</Card.Body>
-								<Card.Footer>
+								<Card.Footer className="d-flex justify-content-center">
 									<Button
 										variant="primary"
 										onClick={() => {

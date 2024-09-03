@@ -2,6 +2,7 @@ import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React, { useEffect, useState } from "react";
 import { LatLng } from "../types/Locations.types";
 import { toast } from "react-toastify";
+import Container from "react-bootstrap/Container";
 
 interface MapNavigationProps {
     userLocation: { lat: number; lng: number };
@@ -60,12 +61,12 @@ const MapNavigation: React.FC<MapNavigationProps> = ({ userLocation, destination
     }
 
     return (
-        <div>
+        <Container className="map-navigation">
             <h2>{route.summary}</h2>
             <p>{leg.start_address.split(",")[0]} to {leg?.end_address.split(",")[0]}</p>
             <p>Distance: {leg.distance?.text}</p>
             <p>Duration: {leg.duration?.text}</p>
-        </div>
+        </Container>
     )
 }
 
