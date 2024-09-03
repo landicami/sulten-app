@@ -14,6 +14,10 @@ import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
+import SearchMapForm from "../components/SearchMapForm";
+import { useSearchParams } from "react-router-dom";
+import { getGeocoding } from "../service/GoogleMaps_API";
+import { toast } from "react-toastify";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
 import useGetRestuarantByCity from "../hooks/useGetRestuarantByCity";
 
@@ -26,6 +30,12 @@ export const MapPage = () => {
 	const [city, setCity] = useState("Malmö");
 
 	const { data: restaurants } = useAdminRestaurants();
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const cityParamSearch = searchParams.get("city") || "";
+
+	const [mapCenterAfterSearch, setMapCenterAfterSearch] = useState<{ lat: number; lng: number } | null>(null);
 
 	const { data } = useGetRestuarantByCity(city);
 
@@ -40,6 +50,39 @@ export const MapPage = () => {
 		setOpenInfoLocation(null);
 		setInfoRestaurant(null);
 	};
+
+	const onCitySearch = (city: string) => {
+		setSearchParams({ city: city });
+	};
+
+	const searchCityWithApi = async (city: string) => {
+		try {
+			const cityFromApi = await getGeocoding(city);
+			console.log("City from api", cityFromApi);
+
+			if (cityFromApi.status === "OK" && cityFromApi.results) {
+				setMapCenterAfterSearch({
+					lat: cityFromApi.results[0].geometry.location.lat,
+					lng: cityFromApi.results[0].geometry.location.lng,
+				});
+				console.log("Searched for", cityFromApi.results[0].formatted_address);
+			} else {
+				toast.error("Please try another city, could not find that one");
+			}
+		} catch (err) {
+			if (err instanceof Error) console.error("Error fetching city data:", err.message);
+
+			toast.error("An error occurred while searching for the city. Please try again.");
+		}
+	};
+
+	console.log(mapCenterAfterSearch);
+
+	useEffect(() => {
+		if (cityParamSearch) {
+			searchCityWithApi(cityParamSearch);
+		}
+	}, [cityParamSearch]);
 
 	const getPostalTown = async (latLng = "55.6071256,13.0212773") => {
 		const resReverseGeoCoding = await getReverseGeocoding(latLng);
@@ -90,12 +133,13 @@ export const MapPage = () => {
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
-			<PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
-
+			{/* <PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} /> */}
+			<SearchMapForm onCitySearch={onCitySearch} />
 			<div style={{ height: "100vh", width: "50vw" }}>
 				<Map
 					defaultZoom={15}
-					defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
+					center={mapCenterAfterSearch || userLocation || { lat: 55.6071256, lng: 13.0212773 }}
+					// defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 				>
 					{restaurants &&
@@ -140,7 +184,7 @@ export const MapPage = () => {
 					)}
 				</Map>
 
-				<MapHandler place={selectedPlace} />
+				{/* <MapHandler place={selectedPlace} /> */}
 			</div>
 		</APIProvider>
 	);
