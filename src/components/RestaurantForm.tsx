@@ -10,7 +10,7 @@ import { AddRestaurantForm, Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface RestaurantFormProps {
 	initialValues?: Restaurant;
@@ -228,18 +228,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 							</Form.Group>
 
 							<Button disabled={isAdding} className="mb-5" type="submit">
-								{isAdding ? "Adding restaurant..." : "Add restaurant"}
+								{isAdding ? "Submitting restaurant..." : "Submit restaurant"}
 							</Button>
-
-							{currentAdmin ? (
-								<Link to="/admin-restaurants">
-									<Button>Adminpage</Button>
-								</Link>
-							) : (
-								<Link to="/">
-									<Button>Map</Button>
-								</Link>
-							)}
 
 							{currentAdmin && (
 								<Form.Group className="mb-3">
