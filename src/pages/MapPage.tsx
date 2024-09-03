@@ -93,6 +93,8 @@ export const MapPage = () => {
 		}
 	};
 
+	const handleReset = () => {};
+
 	useEffect(() => {
 		if (restaurants && city !== null) {
 			const restaurantsByCity = restaurants.filter((restaurant) => restaurant.city === city);
@@ -133,7 +135,7 @@ export const MapPage = () => {
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
-			<SearchMapForm onCitySearch={onCitySearch} />
+			<SearchMapForm onCitySearch={onCitySearch} list={false} onReset={handleReset} />
 			<div style={{ height: "80vh", width: "80vw" }}>
 				<Map
 					defaultZoom={15}

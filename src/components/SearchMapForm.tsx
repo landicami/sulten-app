@@ -9,9 +9,11 @@ import InputGroup from "react-bootstrap/InputGroup";
 
 interface SearchMapFormProps {
 	onCitySearch: (city: string) => void;
+	onReset: () => void;
+	list: boolean;
 }
 
-const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch }) => {
+const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch, list, onReset }) => {
 	const [citySearch, setCitySearch] = useState("");
 
 	const handleCitySearch = (e: React.FormEvent) => {
@@ -34,9 +36,14 @@ const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch }) => {
 								value={citySearch}
 								onChange={(e) => setCitySearch(e.target.value)}
 							/>
-							<Button type="submit" className="btn btn-sm">
+							<Button type="submit" className="btn btn-sm" onClick={handleCitySearch}>
 								Search
 							</Button>
+							{list && (
+								<Button type="submit" variant="success" className="btn btn-sm" onClick={onReset}>
+									Reset
+								</Button>
+							)}
 						</InputGroup>
 					</Form>
 				</Col>
