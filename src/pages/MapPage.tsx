@@ -11,6 +11,7 @@ import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
+import OffCanvasList from "../components/OffCanvasList";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -131,74 +132,83 @@ export const MapPage = () => {
 	}, []);
 
 	return (
-		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
-			<h1>Our map</h1>
-			<SearchMapForm onCitySearch={onCitySearch} />
-			<div style={{ height: "80vh", width: "80vw" }}>
-				<Map
-					defaultZoom={15}
-					/* Spara till senare */
-					defaultCenter={mapCenterAfterSearch ?? userLocation ?? { lat: 55.6071256, lng: 13.0212773 }}
-					center={shouldCenterMap ? mapCenterAfterSearch : undefined}
-					onCameraChanged={() => {
-						setShouldCenterMap(false);
-					}}
-					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
-				>
-					{filterRestaurants &&
-						filterRestaurants.map((restaurant) => {
-							return (
-								<AdvancedMarker
-									key={restaurant._id}
-									clickable={true}
-									onClick={() => handleClickOpenInfo(restaurant)}
-									position={restaurant.location}
-								>
-									<Pin background={"#FBBC04"} glyphColor={"#000"} borderColor={"#000"} />
-								</AdvancedMarker>
-							);
-						})}
-
-					{openInfo && infoRestaurant && (
-						<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
-							<Card key={infoRestaurant._id} className="resturant-info-card">
-								{infoRestaurant.photoUrls.length === 0 ? (
-									<Card.Img variant="top" src="https://placehold.co/600x400?text=No+Image+Yet+:(" />
-								) : (
-									<Card.Img variant="top" src={infoRestaurant.photoUrls[0]} />
-								)}
-								<Card.Body>
-									<Card.Title>{infoRestaurant.name}</Card.Title>
-									<Card.Text>{infoRestaurant.description}</Card.Text>
-									<Card.Text>
-										<strong>Category:</strong> {infoRestaurant.category}
-									</Card.Text>
-									<Card.Text>
-										<strong>Offer:</strong> {infoRestaurant.offer}
-									</Card.Text>
-								</Card.Body>
-								<Card.Footer className="d-flex justify-content-center">
-									<Button
-										variant="primary"
-										onClick={() => {
-											const destination = handleNavigate();
-											setNavigationDestination(destination);
-										}}
-										disabled={!userLocation}
+		<>
+			<OffCanvasList restaurants={filterRestaurants} />
+			<APIProvider
+				apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
+				onLoad={() => console.log("Maps API has loaded.")}
+			>
+				<h1>Our map</h1>
+				<SearchMapForm onCitySearch={onCitySearch} />
+				<div style={{ height: "80vh", width: "80vw" }}>
+					<Map
+						defaultZoom={15}
+						/* Spara till senare */
+						defaultCenter={mapCenterAfterSearch ?? userLocation ?? { lat: 55.6071256, lng: 13.0212773 }}
+						center={shouldCenterMap ? mapCenterAfterSearch : undefined}
+						onCameraChanged={() => {
+							setShouldCenterMap(false);
+						}}
+						mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
+					>
+						{filterRestaurants &&
+							filterRestaurants.map((restaurant) => {
+								return (
+									<AdvancedMarker
+										key={restaurant._id}
+										clickable={true}
+										onClick={() => handleClickOpenInfo(restaurant)}
+										position={restaurant.location}
 									>
-										Navigate to eat here!
-									</Button>
-								</Card.Footer>
-							</Card>
-						</InfoWindow>
-					)}
-				</Map>
+										<Pin background={"#FBBC04"} glyphColor={"#000"} borderColor={"#000"} />
+									</AdvancedMarker>
+								);
+							})}
 
-				{userLocation && navigationDestination && (
-					<MapNavigation userLocation={userLocation} destination={navigationDestination} />
-				)}
-			</div>
-		</APIProvider>
+						{openInfo && infoRestaurant && (
+							<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
+								<Card key={infoRestaurant._id} className="resturant-info-card">
+									{infoRestaurant.photoUrls.length === 0 ? (
+										<Card.Img
+											variant="top"
+											src="https://placehold.co/600x400?text=No+Image+Yet+:("
+										/>
+									) : (
+										<Card.Img variant="top" src={infoRestaurant.photoUrls[0]} />
+									)}
+									<Card.Body>
+										<Card.Title>{infoRestaurant.name}</Card.Title>
+										<Card.Text>{infoRestaurant.description}</Card.Text>
+										<Card.Text>
+											<strong>Category:</strong> {infoRestaurant.category}
+										</Card.Text>
+										<Card.Text>
+											<strong>Offer:</strong> {infoRestaurant.offer}
+										</Card.Text>
+									</Card.Body>
+									<Card.Footer className="d-flex justify-content-center">
+										<Button
+											variant="primary"
+											onClick={() => {
+												const destination = handleNavigate();
+												setNavigationDestination(destination);
+											}}
+											disabled={!userLocation}
+										>
+											Navigate to eat here!
+										</Button>
+									</Card.Footer>
+								</Card>
+							</InfoWindow>
+						)}
+					</Map>
+
+					{userLocation && navigationDestination && (
+						<MapNavigation userLocation={userLocation} destination={navigationDestination} />
+					)}
+				</div>
+			</APIProvider>
+		</>
 	);
 };
 
