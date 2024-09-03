@@ -12,3 +12,26 @@
 .cursor-pointer {
 	cursor: pointer;
 }
+
+
+
+.resturant-info-card {
+	width: 300px;
+	margin: 0 auto;
+	background-color: #212529;
+
+	img {
+		object-fit: cover;
+		height: 200px;
+	}
+
+	button {
+		padding: 0 1rem;
+	}
+}
+
+.map-navigation {
+	padding: 2rem;
+	border: 2px solid #ffffff;
+	border-radius: 0 0 10px 10px;
+}

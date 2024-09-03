@@ -9,7 +9,7 @@ import { FirebaseError } from "firebase/app";
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoginInfo } from "../../types/Admin.types";
 
 const LoginPage = () => {
@@ -84,6 +84,10 @@ const LoginPage = () => {
                                     }
                                 </Button>
                             </Form>
+
+                            <div className="text-center">
+                                <Link to="/forgot-password">Forgot your password?</Link>
+                            </div>
 
                         </Card.Body>
                     </Card>
