@@ -3,7 +3,6 @@ import {
 	AdvancedMarker,
 	InfoWindow,
 	Map,
-	MapCameraChangedEvent,
 	Pin,
 	/* useMap, */
 } from "@vis.gl/react-google-maps";
@@ -15,6 +14,8 @@ import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
+import { getReverseGeocoding } from "../service/GoogleMaps_API";
+import useGetRestuarantByCity from "../hooks/useGetRestuarantByCity";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -22,8 +23,11 @@ export const MapPage = () => {
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
 	const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
+	const [city, setCity] = useState("Malmö");
 
 	const { data: restaurants } = useAdminRestaurants();
+
+	const { data } = useGetRestuarantByCity(city);
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
@@ -37,12 +41,41 @@ export const MapPage = () => {
 		setInfoRestaurant(null);
 	};
 
+	const getPostalTown = async (latLng = "55.6071256,13.0212773") => {
+		const resReverseGeoCoding = await getReverseGeocoding(latLng);
+		const postalTown = resReverseGeoCoding.results[0].address_components.filter((component) => {
+			return component.types.includes("postal_town");
+		});
+
+		if (postalTown.length > 0) {
+			const newcity = postalTown[0].long_name;
+			console.log(newcity);
+			setCity(newcity);
+		} else {
+			console.error("No postal town found in the response.");
+		}
+	};
+
+	console.log("🏙️ city: ", city);
+
+	if (!data) {
+		console.log(`🌮 restaurants in ${city}: is null ❌`);
+	} else if (data.length <= 0) {
+		console.log("Data is not null, but no city yet :) ", data);
+	} else {
+		console.log(`Length 🌮 restaurants in ${city}: is ${data.length} ✅`);
+		console.log(`1st 🌮 restaurants in ${city}: is ${data[0].name} ✅`);
+		console.log(`1st 🌮 restaurants in ${city}: is ${data[0]._id} ✅`);
+		console.log(`1st 🌮 restaurants in ${city}: is ${data[0].address} ✅`);
+	}
+
 	useEffect(() => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
 				(position) => {
 					const { latitude, longitude } = position.coords;
 					setUserLocation({ lat: latitude, lng: longitude });
+					getPostalTown(`${latitude},${longitude}`);
 				},
 				(error) => {
 					console.error("Error obtaining geolocation: ", error);
@@ -50,6 +83,7 @@ export const MapPage = () => {
 			);
 		} else {
 			console.error("Geolocation is not supported by this browser.");
+			getPostalTown();
 		}
 	}, []);
 
@@ -63,9 +97,6 @@ export const MapPage = () => {
 					defaultZoom={15}
 					defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
-					onCameraChanged={(ev: MapCameraChangedEvent) =>
-						console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom)
-					}
 				>
 					{restaurants &&
 						restaurants.map((restaurant) => {
