@@ -1,11 +1,4 @@
-import {
-	APIProvider,
-	AdvancedMarker,
-	InfoWindow,
-	Map,
-	Pin,
-	/* useMap, */
-} from "@vis.gl/react-google-maps";
+import { APIProvider, AdvancedMarker, InfoWindow, Map, Pin } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import useAdminRestaurants from "../hooks/useAdminRestaurants";
@@ -17,7 +10,6 @@ import { toast } from "react-toastify";
 import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
-import { toast } from "react-toastify";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
 import useGetRestuarantByCity from "../hooks/useGetRestuarantByCity";
 
@@ -28,6 +20,7 @@ export const MapPage = () => {
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
 	const [navigationDestination, setNavigationDestination] = useState<LatLng | undefined>(undefined);
 	const [city, setCity] = useState("Malmö");
+	const [shouldCenterMap, setShouldCenterMap] = useState(false);
 
 	const { data: restaurants } = useAdminRestaurants();
 
@@ -71,6 +64,9 @@ export const MapPage = () => {
 					lat: cityFromApi.results[0].geometry.location.lat,
 					lng: cityFromApi.results[0].geometry.location.lng,
 				});
+
+				setShouldCenterMap(true);
+
 				console.log("Searched for", cityFromApi.results[0].formatted_address);
 			} else {
 				toast.error("Please try another city, could not find that one");
@@ -83,12 +79,6 @@ export const MapPage = () => {
 	};
 
 	console.log(mapCenterAfterSearch);
-
-	useEffect(() => {
-		if (cityParamSearch) {
-			searchCityWithApi(cityParamSearch);
-		}
-	}, [cityParamSearch]);
 
 	const getPostalTown = async (latLng = "55.6071256,13.0212773") => {
 		const resReverseGeoCoding = await getReverseGeocoding(latLng);
@@ -119,6 +109,12 @@ export const MapPage = () => {
 	}
 
 	useEffect(() => {
+		if (cityParamSearch) {
+			searchCityWithApi(cityParamSearch);
+		}
+	}, [cityParamSearch]);
+
+	useEffect(() => {
 		if (navigator.geolocation) {
 			const watchId = navigator.geolocation.watchPosition(
 				(position) => {
@@ -145,17 +141,16 @@ export const MapPage = () => {
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
-			<PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
-
-			<div style={{ height: "100vh", width: "100%" }}>
-			{/* <PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} /> */}
 			<SearchMapForm onCitySearch={onCitySearch} />
-			<div style={{ height: "100vh", width: "50vw" }}>
+			<div style={{ height: "80vh", width: "80vw" }}>
 				<Map
 					defaultZoom={15}
-					defaultCenter={userLocation ?? { lat: 0, lng: 0 }}
-					center={mapCenterAfterSearch || userLocation || { lat: 55.6071256, lng: 13.0212773 }}
-					// defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
+					/* Spara till senare */
+					defaultCenter={mapCenterAfterSearch ?? userLocation ?? { lat: 55.6071256, lng: 13.0212773 }}
+					center={shouldCenterMap ? mapCenterAfterSearch : undefined}
+					onCameraChanged={() => {
+						setShouldCenterMap(false);
+					}}
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 				>
 					{restaurants &&
@@ -183,8 +178,12 @@ export const MapPage = () => {
 								<Card.Body>
 									<Card.Title>{infoRestaurant.name}</Card.Title>
 									<Card.Text>{infoRestaurant.description}</Card.Text>
-									<Card.Text><strong>Category:</strong> {infoRestaurant.category}</Card.Text>
-									<Card.Text><strong>Offer:</strong> {infoRestaurant.offer}</Card.Text>
+									<Card.Text>
+										<strong>Category:</strong> {infoRestaurant.category}
+									</Card.Text>
+									<Card.Text>
+										<strong>Offer:</strong> {infoRestaurant.offer}
+									</Card.Text>
 								</Card.Body>
 								<Card.Footer className="d-flex justify-content-center">
 									<Button
@@ -206,8 +205,6 @@ export const MapPage = () => {
 				{userLocation && navigationDestination && (
 					<MapNavigation userLocation={userLocation} destination={navigationDestination} />
 				)}
-				<MapHandler place={selectedPlace} />
-				{/* <MapHandler place={selectedPlace} /> */}
 			</div>
 		</APIProvider>
 	);
