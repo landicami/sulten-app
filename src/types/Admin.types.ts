@@ -24,8 +24,8 @@ export type SignupInfo = {
 
 export type UpdateAdminFormData = {
 	uid: string;
-	name: string | null;
-	/* photoFiles: FileList; */
+	name: string;
+	photoFiles: FileList;
 	email: string;
 	password: string;
 	confirmPassword: string;

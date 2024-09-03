@@ -3,6 +3,9 @@ import {
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 	signOut,
+	updateEmail,
+	updatePassword,
+	updateProfile,
 	User,
 	UserCredential,
 } from "firebase/auth";
@@ -17,6 +20,10 @@ interface IAuthContext {
 	userEmail: string | null;
 	userName: string | null;
 	userPhoto: string | null;
+	setEmail: (email: string) => Promise<void>;
+	setName: (name: string) => Promise<void>;
+	setPhoto: (url: string) => Promise<void>;
+	setPassword: (password: string) => Promise<void>;
 	updateInfo: () => boolean;
 }
 
@@ -55,11 +62,47 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		return true;
 	};
 
+	const setName = async (name: string) => {
+		if (!currentAdmin) {
+			throw new Error("No current admin");
+		}
+
+		return updateProfile(currentAdmin, { displayName: name });
+	}
+
+	const setEmail = async (email: string) => {
+		if (!currentAdmin) {
+			throw new Error("No current admin");
+		}
+
+		return updateEmail(currentAdmin, email);
+	}
+
+	const setPhoto = async (url: string) => {
+		if (!currentAdmin) {
+			throw new Error("No current admin");
+		}
+
+		return updateProfile(currentAdmin, { photoURL: url });
+	}
+
+	const setPassword = async (password: string) => {
+		if (!currentAdmin) {
+			throw new Error("No current admin");
+		}
+
+		return updatePassword(currentAdmin, password);
+	}
+
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (admin) => {
 			setCurrentAdmin(admin);
 			setLoading(false);
 		});
+
+		if (currentAdmin) {
+			updateInfo();
+		}
 
 		return unsubscribe;
 	}, []);
@@ -70,11 +113,15 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 				currentAdmin,
 				login,
 				logout,
+				updateInfo,
 				resetPassword,
+				setName,
+				setEmail,
+				setPassword,
+				setPhoto,
 				userEmail,
 				userName,
 				userPhoto,
-				updateInfo,
 			}}
 		>
 			{loading ? (
