@@ -7,9 +7,7 @@ import Image from "react-bootstrap/Image";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
 const Navigation = () => {
-	const { currentAdmin, userEmail, userName, userPhoto } = useAuth();
-
-	console.log("currentAdmin.uid: ", currentAdmin?.uid);
+	const { currentAdmin } = useAuth();
 
 	return (
 		<Navbar bg="dark" variant="dark" expand="md">
@@ -21,15 +19,14 @@ const Navigation = () => {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="ms-auto">
-						{/* If admin is logged in */}
 						{currentAdmin ? (
 							<>
 								<NavDropdown
 									title={
-										userPhoto ? (
-											<Image src={userPhoto} fluid height={30} width={30} roundedCircle />
+										currentAdmin.photoURL ? (
+											<Image src={currentAdmin.photoURL} fluid height={30} width={30} roundedCircle />
 										) : (
-											(userName || userEmail) ?? "Admin"
+											(currentAdmin.displayName || currentAdmin.email) ?? "Admin"
 										)
 									}
 								>
@@ -47,7 +44,6 @@ const Navigation = () => {
 								</NavDropdown>
 							</>
 						) : (
-							/* If admin isn't logged in */
 							<Nav.Link as={NavLink} end to="/login">
 								Log in as Admin
 							</Nav.Link>
