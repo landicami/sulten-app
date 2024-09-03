@@ -1,15 +1,19 @@
-import { onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
+import {
+	onAuthStateChanged,
+	sendPasswordResetEmail,
+	signInWithEmailAndPassword,
+	signOut,
+	User,
+	UserCredential,
+} from "firebase/auth";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { auth } from "../service/firebase";
 
 interface IAuthContext {
-    currentAdmin: User | null;
-    login: (email: string, password: string) => Promise<UserCredential>;
-    logout: () => Promise<void>;
-    resetPassword: (email: string) => Promise<void>
 	currentAdmin: User | null;
 	login: (email: string, password: string) => Promise<UserCredential>;
 	logout: () => Promise<void>;
+	resetPassword: (email: string) => Promise<void>;
 	userEmail: string | null;
 	userName: string | null;
 	userPhoto: string | null;
@@ -29,17 +33,14 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		return signInWithEmailAndPassword(auth, email, password);
 	};
 
-    const logout = () => {
-        return signOut(auth);
-    };
-
-    const resetPassword = (email: string) => {
-        return sendPasswordResetEmail(auth, email, {
-            url: `${window.location.origin}/login`,
-        });
-    }
 	const logout = () => {
 		return signOut(auth);
+	};
+
+	const resetPassword = (email: string) => {
+		return sendPasswordResetEmail(auth, email, {
+			url: `${window.location.origin}/login`,
+		});
 	};
 
 	const updateInfo = () => {
@@ -64,35 +65,19 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		return unsubscribe;
 	}, []);
 
-    return (
-        <AuthContext.Provider value={{
-            currentAdmin,
-            login,
-            logout,
-            resetPassword
-        }}> {loading
-            ? <div><p>Loading...</p></div>
-            : <>{children}</>
-            }
-        </AuthContext.Provider>
-    )
-
-}
-
-
 	return (
 		<AuthContext.Provider
 			value={{
 				currentAdmin,
 				login,
 				logout,
+				resetPassword,
 				userEmail,
 				userName,
 				userPhoto,
 				updateInfo,
 			}}
 		>
-			{" "}
 			{loading ? (
 				<div>
 					<p>Loading...</p>
