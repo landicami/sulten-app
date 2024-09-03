@@ -82,9 +82,6 @@ const UpdateProfilePage = () => {
                 photoUrl,
             });
 
-            toast.success("Admin updated successfully");
-
-
             if (data.email !== userEmail) {
                 await setEmail(data.email);
             }
@@ -99,7 +96,6 @@ const UpdateProfilePage = () => {
 
             updateInfo();
             toast.success("Admin updated successfully");
-            //maybe navigate
 
         } catch (error) {
             if (error instanceof FirebaseError) {
