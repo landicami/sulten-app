@@ -15,6 +15,8 @@ import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
+import { getReverseGeocoding } from "../service/GoogleMaps_API";
+import useRestaurantsInCity from "../hooks/useRestaurantsInCity";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -24,6 +26,8 @@ export const MapPage = () => {
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
 
 	const { data: restaurants } = useAdminRestaurants();
+
+	const { changeCity, restaurants: restaurantsInCity, city } = useRestaurantsInCity();
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
@@ -37,12 +41,37 @@ export const MapPage = () => {
 		setInfoRestaurant(null);
 	};
 
+	const getPostalTown = async (latLng = "55.6071256,13.0212773") => {
+		const resReverseGeoCoding = await getReverseGeocoding(latLng);
+		const postalTown = resReverseGeoCoding.results[0].address_components.filter((component) => {
+			return component.types.includes("postal_town");
+		});
+
+		if (postalTown.length > 0) {
+			const newcity = postalTown[0].long_name;
+			changeCity(newcity);
+		} else {
+			console.error("No postal town found in the response.");
+		}
+	};
+
+	console.log("🏙️ city: ", city);
+
+	if (!restaurantsInCity) {
+		console.log(`🌮 restaurants in ${city}: is null ❌`);
+	} else if (restaurantsInCity.length <= 0) {
+		console.log(`🌮 restaurants in ${city}: is 0 ✅`);
+	} else {
+		console.log(`1st 🌮 restaurants in ${city}: is ${restaurantsInCity[0].name} ✅`);
+	}
+
 	useEffect(() => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
 				(position) => {
 					const { latitude, longitude } = position.coords;
 					setUserLocation({ lat: latitude, lng: longitude });
+					getPostalTown(`${latitude},${longitude}`);
 				},
 				(error) => {
 					console.error("Error obtaining geolocation: ", error);
@@ -50,8 +79,11 @@ export const MapPage = () => {
 			);
 		} else {
 			console.error("Geolocation is not supported by this browser.");
+			getPostalTown();
 		}
 	}, []);
+
+	useEffect(() => {}, [city]);
 
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
