@@ -12,6 +12,8 @@ import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
+import MapNavigation from "../components/MapNavigation";
+import { toast } from "react-toastify";
 import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
@@ -24,6 +26,7 @@ export const MapPage = () => {
 	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
+	const [navigationDestination, setNavigationDestination] = useState<LatLng | undefined>(undefined);
 	const [city, setCity] = useState("Malmö");
 
 	const { data: restaurants } = useAdminRestaurants();
@@ -46,6 +49,12 @@ export const MapPage = () => {
 		setOpenInfo(false);
 		setOpenInfoLocation(null);
 		setInfoRestaurant(null);
+	};
+
+	const handleNavigate = () => {
+		if (infoRestaurant && userLocation) {
+			return infoRestaurant.location;
+		}
 	};
 
 	const onCitySearch = (city: string) => {
@@ -111,17 +120,23 @@ export const MapPage = () => {
 
 	useEffect(() => {
 		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
+			const watchId = navigator.geolocation.watchPosition(
 				(position) => {
 					const { latitude, longitude } = position.coords;
 					setUserLocation({ lat: latitude, lng: longitude });
 					getPostalTown(`${latitude},${longitude}`);
 				},
 				(error) => {
-					console.error("Error obtaining geolocation: ", error);
+					toast.error(error.message);
 				}
 			);
+
+			return () => {
+				setUserLocation(null);
+				navigator.geolocation.clearWatch(watchId);
+			};
 		} else {
+			toast.error("Your browser does not support us getting your location.");
 			console.error("Geolocation is not supported by this browser.");
 			getPostalTown();
 		}
@@ -130,11 +145,15 @@ export const MapPage = () => {
 	return (
 		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
 			<h1>Our map</h1>
+			<PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
+
+			<div style={{ height: "100vh", width: "100%" }}>
 			{/* <PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} /> */}
 			<SearchMapForm onCitySearch={onCitySearch} />
 			<div style={{ height: "100vh", width: "50vw" }}>
 				<Map
 					defaultZoom={15}
+					defaultCenter={userLocation ?? { lat: 0, lng: 0 }}
 					center={mapCenterAfterSearch || userLocation || { lat: 55.6071256, lng: 13.0212773 }}
 					// defaultCenter={userLocation || { lat: 55.6071256, lng: 13.0212773 }} // Use user's location or default
 					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
@@ -155,7 +174,7 @@ export const MapPage = () => {
 
 					{openInfo && infoRestaurant && (
 						<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
-							<Card key={infoRestaurant._id}>
+							<Card key={infoRestaurant._id} className="resturant-info-card">
 								{infoRestaurant.photoUrls.length === 0 ? (
 									<Card.Img variant="top" src="https://placehold.co/600x400?text=No+Image+Yet+:(" />
 								) : (
@@ -164,23 +183,30 @@ export const MapPage = () => {
 								<Card.Body>
 									<Card.Title>{infoRestaurant.name}</Card.Title>
 									<Card.Text>{infoRestaurant.description}</Card.Text>
-									<Card.Text>{infoRestaurant.category}</Card.Text>
-									<Card.Text>{infoRestaurant.offer}</Card.Text>
+									<Card.Text><strong>Category:</strong> {infoRestaurant.category}</Card.Text>
+									<Card.Text><strong>Offer:</strong> {infoRestaurant.offer}</Card.Text>
 								</Card.Body>
-								<Card.Footer>
-									{infoRestaurant.website ? (
-										<Button>
-											<a href={infoRestaurant.website}></a>Besök hemsidan
-										</Button>
-									) : (
-										<p>Det finns ingen hemsida</p>
-									)}
+								<Card.Footer className="d-flex justify-content-center">
+									<Button
+										variant="primary"
+										onClick={() => {
+											const destination = handleNavigate();
+											setNavigationDestination(destination);
+										}}
+										disabled={!userLocation}
+									>
+										Navigate to eat here!
+									</Button>
 								</Card.Footer>
 							</Card>
 						</InfoWindow>
 					)}
 				</Map>
 
+				{userLocation && navigationDestination && (
+					<MapNavigation userLocation={userLocation} destination={navigationDestination} />
+				)}
+				<MapHandler place={selectedPlace} />
 				{/* <MapHandler place={selectedPlace} /> */}
 			</div>
 		</APIProvider>
