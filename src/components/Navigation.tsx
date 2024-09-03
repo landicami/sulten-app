@@ -19,16 +19,6 @@ const Navigation = () => {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="ms-auto">
-						<Nav.Link as={NavLink} end to="/">
-							Map
-						</Nav.Link>
-						<Nav.Link as={NavLink} end to="/list-all-restaurants">
-							List
-						</Nav.Link>
-						<Nav.Link as={NavLink} end to="/add-restaurant">
-							Add recommendation
-						</Nav.Link>
-
 						{/* If admin is logged in */}
 						{currentAdmin ? (
 							<>
@@ -60,6 +50,15 @@ const Navigation = () => {
 								Log in as Admin
 							</Nav.Link>
 						)}
+						<Nav.Link as={NavLink} end to="/">
+							Map
+						</Nav.Link>
+						<Nav.Link as={NavLink} end to="/list-all-restaurants">
+							List
+						</Nav.Link>
+						<Nav.Link as={NavLink} end to="/add-restaurant">
+							Add recommendation
+						</Nav.Link>
 					</Nav>
 				</Navbar.Collapse>
 			</Container>

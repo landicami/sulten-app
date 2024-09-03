@@ -58,9 +58,8 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (admin) => {
 			setCurrentAdmin(admin);
+			setLoading(false);
 		});
-
-		setLoading(false);
 
 		return unsubscribe;
 	}, []);
