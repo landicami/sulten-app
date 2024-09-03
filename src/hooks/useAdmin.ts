@@ -2,7 +2,7 @@ import { where } from "firebase/firestore";
 import { adminCol } from "../service/firebase";
 import useStreamCollection from "./useStreamCollection";
 
-const useAdmin = (uid: string) => {
+const useAdmin = (uid: string = "") => {
 	return useStreamCollection(adminCol, where("uid", "==", uid));
 };
 

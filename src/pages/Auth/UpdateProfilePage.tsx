@@ -6,7 +6,7 @@ import { UpdateAdminFormData } from "../../types/Admin.types";
 import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../service/firebase";
+import { adminCol, storage } from "../../service/firebase";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -15,11 +15,13 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import useAdmin from "../../hooks/useAdmin";
 import { useParams } from "react-router-dom";
+import { doc, updateDoc } from "firebase/firestore";
 
 const UpdateProfilePage = () => {
     const [submitting, setSubmitting] = useState(false);
+    const { id } = useParams();
+    const { data: admin } = useAdmin(id);
     const {
-        currentAdmin,
         updateInfo,
         setName,
         setEmail,
@@ -35,28 +37,29 @@ const UpdateProfilePage = () => {
             name: userName ?? "",
         }
     });
-    const { id } = useParams();
-    const { data: admin } = useAdmin(id as string);
-
-    console.log("admins: ", admin);
-    console.log("currentAdmin: ", currentAdmin);
 
     const passRef = useRef("");
     passRef.current = watch("password");
 
     const onEditAdmin: SubmitHandler<UpdateAdminFormData> = async (data) => {
 
+        if (!id || !admin || !admin[0]) {
+            throw new Error("No valid admin data found.");
+            return;
+        }
+
         try {
             setSubmitting(true);
-            console.log(currentAdmin);
+            let photoUrl = userPhoto;
 
-            if (data.photoFiles.length) {
+
+            if (data.photoFiles && data.photoFiles.length > 0) {
                 const photo = data.photoFiles[0];
-                const fileRef = ref(storage, `admins/${currentAdmin?.uid}/${photo.name}`);
+                const fileRef = ref(storage, `admins/${admin[0].uid}/${photo.name}`);
 
                 try {
                     const uploadPhoto = await uploadBytes(fileRef, photo);
-                    const photoUrl = await getDownloadURL(uploadPhoto.ref);
+                    photoUrl = await getDownloadURL(uploadPhoto.ref);
                     await setPhoto(photoUrl);
 
                 } catch (err) {
@@ -67,6 +70,19 @@ const UpdateProfilePage = () => {
                     }
                 }
             }
+
+
+            const adminDocRef = doc(adminCol, admin[0]._id);
+            const { photoFiles, ...restData } = data;
+
+
+            await updateDoc(adminDocRef, {
+                ...restData,
+                photoUrl,
+            });
+
+            toast.success("Admin updated successfully");
+
 
             if (data.email !== userEmail) {
                 await setEmail(data.email);
