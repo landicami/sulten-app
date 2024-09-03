@@ -4,7 +4,7 @@ import { Restaurant } from "../types/Restaurant.types";
 import Container from "react-bootstrap/Container";
 import TanstackTable from "../components/table/TanstackTable";
 import { useEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
@@ -122,8 +122,12 @@ const ListAllRestaurantsPage = () => {
 			{adminLoading && <p>Loading...</p>}
 
 			<h2 className="mb-4">List of all restaurants 🥙</h2>
-
-			<SearchMapForm onCitySearch={onCitySearch} list={true} onReset={handleReset} />
+			<div className="mb-3 d-flex justify-content-between">
+				<SearchMapForm onCitySearch={onCitySearch} />
+				<Button className="btn-sm" onClick={handleReset} variant="outline-warning">
+					Reset search
+				</Button>
+			</div>
 
 			{adminRestaurants &&
 				adminRestaurants.length > 0 &&
