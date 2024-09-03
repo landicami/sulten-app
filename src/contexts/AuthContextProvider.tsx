@@ -2,51 +2,77 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User, UserCred
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { auth } from "../service/firebase";
 
-
 interface IAuthContext {
-    currentAdmin: User | null;
-    login: (email: string, password: string) => Promise<UserCredential>;
-    logout: () => Promise<void>;
+	currentAdmin: User | null;
+	login: (email: string, password: string) => Promise<UserCredential>;
+	logout: () => Promise<void>;
+	userEmail: string | null;
+	userName: string | null;
+	userPhoto: string | null;
+	updateInfo: () => boolean;
 }
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
 const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const [currentAdmin, setCurrentAdmin] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+	const [currentAdmin, setCurrentAdmin] = useState<User | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [userName, setUserName] = useState<string | null>(null);
+	const [userEmail, setUserEmail] = useState<string | null>(null);
+	const [userPhoto, setUserPhoto] = useState<string | null>(null);
 
-    const login = (email: string, password: string) => {
-        return signInWithEmailAndPassword(auth, email, password);
-    };
+	const login = (email: string, password: string) => {
+		return signInWithEmailAndPassword(auth, email, password);
+	};
 
-    const logout = () => {
-        return signOut(auth);
-    };
+	const logout = () => {
+		return signOut(auth);
+	};
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (admin) => {
-            setCurrentAdmin(admin);
-        });
+	const updateInfo = () => {
+		if (!currentAdmin) {
+			return false;
+		}
 
-        setLoading(false);
+		setUserName(currentAdmin.displayName);
+		setUserEmail(currentAdmin.email);
+		setUserPhoto(currentAdmin.photoURL);
 
-        return unsubscribe;
-    }, []);
+		return true;
+	};
 
-    return (
-        <AuthContext.Provider value={{
-            currentAdmin,
-            login,
-            logout
-        }}> {loading
-            ? <div><p>Loading...</p></div>
-            : <>{children}</>
-            }
-        </AuthContext.Provider>
-    )
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (admin) => {
+			setCurrentAdmin(admin);
+		});
 
-}
+		setLoading(false);
 
+		return unsubscribe;
+	}, []);
 
+	return (
+		<AuthContext.Provider
+			value={{
+				currentAdmin,
+				login,
+				logout,
+				userEmail,
+				userName,
+				userPhoto,
+				updateInfo,
+			}}
+		>
+			{" "}
+			{loading ? (
+				<div>
+					<p>Loading...</p>
+				</div>
+			) : (
+				<>{children}</>
+			)}
+		</AuthContext.Provider>
+	);
+};
 
 export default AuthContextProvider;
