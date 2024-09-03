@@ -13,6 +13,8 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import useAdmin from "../../hooks/useAdmin";
+import { useParams } from "react-router-dom";
 
 const UpdateProfilePage = () => {
     const [submitting, setSubmitting] = useState(false);
@@ -33,6 +35,11 @@ const UpdateProfilePage = () => {
             name: userName ?? "",
         }
     });
+    const { id } = useParams();
+    const { data: admin } = useAdmin(id as string);
+
+    console.log("admins: ", admin);
+    console.log("currentAdmin: ", currentAdmin);
 
     const passRef = useRef("");
     passRef.current = watch("password");

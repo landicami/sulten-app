@@ -33,7 +33,7 @@ function App() {
 				<Route element={<ProtectedRoutes />}>
 					<Route path="/admin-restaurants" element={<AdminRestaurantPage />} />
 					<Route path="/restaurants/:id" element={<EditRestaurantPage />} />
-					<Route path="/update-profile" element={<UpdateProfilePage />} />
+					<Route path="/update-profile/:id" element={<UpdateProfilePage />} />
 				</Route>
 
 				{/* Auth Routes */}

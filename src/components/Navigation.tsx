@@ -9,6 +9,8 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 const Navigation = () => {
 	const { currentAdmin, userEmail, userName, userPhoto } = useAuth();
 
+	console.log("currentAdmin.uid: ", currentAdmin?.uid);
+
 	return (
 		<Navbar bg="dark" variant="dark" expand="md">
 			<Container>
@@ -31,7 +33,7 @@ const Navigation = () => {
 										)
 									}
 								>
-									<NavDropdown.Item as={NavLink} to="/update-profile">
+									<NavDropdown.Item as={NavLink} to={`/update-profile/${currentAdmin.uid}`}>
 										Update profile
 									</NavDropdown.Item>
 									<NavDropdown.Divider />
