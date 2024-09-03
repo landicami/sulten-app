@@ -11,7 +11,7 @@ import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
-import useGetRestuarantByCity from "../hooks/useGetRestuarantByCity";
+import OffCanvasList from "../components/OffCanvasList";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -19,18 +19,15 @@ export const MapPage = () => {
 	const [openInfoLocation, setOpenInfoLocation] = useState<null | LatLng>(null);
 	const [infoRestaurant, setInfoRestaurant] = useState<null | Restaurant>(null);
 	const [navigationDestination, setNavigationDestination] = useState<LatLng | undefined>(undefined);
-	const [city, setCity] = useState("Malmö");
+	const [city, setCity] = useState<string | null>(null);
 	const [shouldCenterMap, setShouldCenterMap] = useState(false);
+	const [mapCenterAfterSearch, setMapCenterAfterSearch] = useState<{ lat: number; lng: number } | null>(null);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const [filterRestaurants, setFilterdRestaurants] = useState<Restaurant[] | null>(null);
 
 	const { data: restaurants } = useAdminRestaurants();
 
-	const [searchParams, setSearchParams] = useSearchParams();
-
 	const cityParamSearch = searchParams.get("city") || "";
-
-	const [mapCenterAfterSearch, setMapCenterAfterSearch] = useState<{ lat: number; lng: number } | null>(null);
-
-	const { data } = useGetRestuarantByCity(city);
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
@@ -66,6 +63,10 @@ export const MapPage = () => {
 				});
 
 				setShouldCenterMap(true);
+				const lastComma = cityFromApi.results[0].formatted_address.lastIndexOf(",");
+				const result = cityFromApi.results[0].formatted_address.substring(0, lastComma).trim();
+
+				setCity(result);
 
 				console.log("Searched for", cityFromApi.results[0].formatted_address);
 			} else {
@@ -77,8 +78,6 @@ export const MapPage = () => {
 			toast.error("An error occurred while searching for the city. Please try again.");
 		}
 	};
-
-	console.log(mapCenterAfterSearch);
 
 	const getPostalTown = async (latLng = "55.6071256,13.0212773") => {
 		const resReverseGeoCoding = await getReverseGeocoding(latLng);
@@ -95,18 +94,12 @@ export const MapPage = () => {
 		}
 	};
 
-	console.log("🏙️ city: ", city);
-
-	if (!data) {
-		console.log(`🌮 restaurants in ${city}: is null ❌`);
-	} else if (data.length <= 0) {
-		console.log("Data is not null, but no city yet :) ", data);
-	} else {
-		console.log(`Length 🌮 restaurants in ${city}: is ${data.length} ✅`);
-		console.log(`1st 🌮 restaurants in ${city}: is ${data[0].name} ✅`);
-		console.log(`1st 🌮 restaurants in ${city}: is ${data[0]._id} ✅`);
-		console.log(`1st 🌮 restaurants in ${city}: is ${data[0].address} ✅`);
-	}
+	useEffect(() => {
+		if (restaurants && city !== null) {
+			const restaurantsByCity = restaurants.filter((restaurant) => restaurant.city === city);
+			setFilterdRestaurants(restaurantsByCity);
+		}
+	}, [city, restaurants]);
 
 	useEffect(() => {
 		if (cityParamSearch) {
@@ -124,6 +117,8 @@ export const MapPage = () => {
 				},
 				(error) => {
 					toast.error(error.message);
+					setUserLocation({ lat: 55.6071256, lng: 13.0212773 });
+					setCity("Malmö");
 				}
 			);
 
@@ -139,74 +134,83 @@ export const MapPage = () => {
 	}, []);
 
 	return (
-		<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
-			<h1>Our map</h1>
-			<SearchMapForm onCitySearch={onCitySearch} />
-			<div style={{ height: "80vh", width: "80vw" }}>
-				<Map
-					defaultZoom={15}
-					/* Spara till senare */
-					defaultCenter={mapCenterAfterSearch ?? userLocation ?? { lat: 55.6071256, lng: 13.0212773 }}
-					center={shouldCenterMap ? mapCenterAfterSearch : undefined}
-					onCameraChanged={() => {
-						setShouldCenterMap(false);
-					}}
-					mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
-				>
-					{restaurants &&
-						restaurants.map((restaurant) => {
-							return (
-								<AdvancedMarker
-									key={restaurant._id}
-									clickable={true}
-									onClick={() => handleClickOpenInfo(restaurant)}
-									position={restaurant.location}
-								>
-									<Pin background={"#FBBC04"} glyphColor={"#000"} borderColor={"#000"} />
-								</AdvancedMarker>
-							);
-						})}
-
-					{openInfo && infoRestaurant && (
-						<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
-							<Card key={infoRestaurant._id} className="resturant-info-card">
-								{infoRestaurant.photoUrls.length === 0 ? (
-									<Card.Img variant="top" src="https://placehold.co/600x400?text=No+Image+Yet+:(" />
-								) : (
-									<Card.Img variant="top" src={infoRestaurant.photoUrls[0]} />
-								)}
-								<Card.Body>
-									<Card.Title>{infoRestaurant.name}</Card.Title>
-									<Card.Text>{infoRestaurant.description}</Card.Text>
-									<Card.Text>
-										<strong>Category:</strong> {infoRestaurant.category}
-									</Card.Text>
-									<Card.Text>
-										<strong>Offer:</strong> {infoRestaurant.offer}
-									</Card.Text>
-								</Card.Body>
-								<Card.Footer className="d-flex justify-content-center">
-									<Button
-										variant="primary"
-										onClick={() => {
-											const destination = handleNavigate();
-											setNavigationDestination(destination);
-										}}
-										disabled={!userLocation}
+		<>
+			<OffCanvasList restaurants={filterRestaurants} />
+			<APIProvider
+				apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
+				onLoad={() => console.log("Maps API has loaded.")}
+			>
+				<h1>Our map</h1>
+				<SearchMapForm onCitySearch={onCitySearch} />
+				<div style={{ height: "80vh", width: "80vw" }}>
+					<Map
+						defaultZoom={15}
+						/* Spara till senare */
+						defaultCenter={mapCenterAfterSearch ?? userLocation ?? { lat: 55.6071256, lng: 13.0212773 }}
+						center={shouldCenterMap ? mapCenterAfterSearch : undefined}
+						onCameraChanged={() => {
+							setShouldCenterMap(false);
+						}}
+						mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
+					>
+						{filterRestaurants &&
+							filterRestaurants.map((restaurant) => {
+								return (
+									<AdvancedMarker
+										key={restaurant._id}
+										clickable={true}
+										onClick={() => handleClickOpenInfo(restaurant)}
+										position={restaurant.location}
 									>
-										Navigate to eat here!
-									</Button>
-								</Card.Footer>
-							</Card>
-						</InfoWindow>
-					)}
-				</Map>
+										<Pin background={"#FBBC04"} glyphColor={"#000"} borderColor={"#000"} />
+									</AdvancedMarker>
+								);
+							})}
 
-				{userLocation && navigationDestination && (
-					<MapNavigation userLocation={userLocation} destination={navigationDestination} />
-				)}
-			</div>
-		</APIProvider>
+						{openInfo && infoRestaurant && (
+							<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
+								<Card key={infoRestaurant._id} className="resturant-info-card">
+									{infoRestaurant.photoUrls.length === 0 ? (
+										<Card.Img
+											variant="top"
+											src="https://placehold.co/600x400?text=No+Image+Yet+:("
+										/>
+									) : (
+										<Card.Img variant="top" src={infoRestaurant.photoUrls[0]} />
+									)}
+									<Card.Body>
+										<Card.Title>{infoRestaurant.name}</Card.Title>
+										<Card.Text>{infoRestaurant.description}</Card.Text>
+										<Card.Text>
+											<strong>Category:</strong> {infoRestaurant.category}
+										</Card.Text>
+										<Card.Text>
+											<strong>Offer:</strong> {infoRestaurant.offer}
+										</Card.Text>
+									</Card.Body>
+									<Card.Footer className="d-flex justify-content-center">
+										<Button
+											variant="primary"
+											onClick={() => {
+												const destination = handleNavigate();
+												setNavigationDestination(destination);
+											}}
+											disabled={!userLocation}
+										>
+											Navigate to eat here!
+										</Button>
+									</Card.Footer>
+								</Card>
+							</InfoWindow>
+						)}
+					</Map>
+
+					{userLocation && navigationDestination && (
+						<MapNavigation userLocation={userLocation} destination={navigationDestination} />
+					)}
+				</div>
+			</APIProvider>
+		</>
 	);
 };
 

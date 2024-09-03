@@ -5,13 +5,10 @@ import useAuth from "../../hooks/useAuth";
 import { ColumnDef } from "@tanstack/react-table";
 import { Restaurant } from "../../types/Restaurant.types";
 import TanstackTable from "../../components/table/TanstackTable";
-import { db } from "../../service/firebase";
-import { deleteDoc, doc } from "firebase/firestore";
-import { toast } from "react-toastify";
-import { FirebaseError } from "firebase/app";
 import useTipsRestaurants from "../../hooks/useTipsRestaurants";
 import { Admin } from "../../types/Admin.types";
 import useAdmins from "../../hooks/useAdmins";
+import DeleteRestaurantHandler from "../../components/DeleteRestaurantHandler";
 
 const AdminRestaurantPage = () => {
 	const { currentAdmin } = useAuth();
@@ -71,27 +68,7 @@ const AdminRestaurantPage = () => {
 		},
 		{
 			header: "Delete",
-			cell: ({ row }) => (
-				<Button
-					className="btn btn-danger"
-					size="sm"
-					type="button"
-					onClick={async () => {
-						const id = row.original._id; // Hämtar ID:t från raden
-						if (window.confirm("Are you sure you want to delete this item?")) {
-							try {
-								const docRef = doc(db, "restaurants", id);
-								await deleteDoc(docRef);
-								toast.success("Item deleted successfully!");
-							} catch (error) {
-								if (error instanceof FirebaseError) toast.error("Error deleting document");
-							}
-						}
-					}}
-				>
-					Delete
-				</Button>
-			),
+			cell: ({ row }) => <DeleteRestaurantHandler row={row} />,
 		},
 	];
 
