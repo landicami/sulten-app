@@ -18,14 +18,15 @@ const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
 
 	return (
 		<>
-			<Image
-				src={Hamburger}
-				className="mb-3"
-				title="Show list of restaurants"
-				role="button"
-				onClick={handleShow}
-				style={{ height: "2rem" }}
-			/>
+			<div className="hamburger-button">
+				<Image
+					src={Hamburger}
+					title="Show list of restaurants"
+					role="button"
+					onClick={handleShow}
+					style={{ height: "2rem" }}
+				/>
+			</div>
 
 			<Offcanvas show={show} onHide={handleClose}>
 				<Offcanvas.Header closeButton>
