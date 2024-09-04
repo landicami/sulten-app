@@ -1,4 +1,4 @@
-import { APIProvider, AdvancedMarker, InfoWindow, Map, Pin } from "@vis.gl/react-google-maps";
+import { APIProvider, AdvancedMarker, InfoWindow, Map } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import { LatLng } from "../types/Locations.types";
@@ -83,10 +83,17 @@ export const MapPage = () => {
 
 		if (postalTown.length > 0) {
 			const newcity = postalTown[0].long_name;
-			setCity(newcity);
+			setSearchParams({ city: newcity });
 		} else {
 			toast.error("No postal town found in the response.");
 		}
+	};
+
+	const handleReset = () => {
+		if (userLocation) {
+			getPostalTown(`${userLocation.lat},${userLocation.lng}`);
+		}
+		setSearchParams({ city: "Malmö" });
 	};
 
 	useEffect(() => {
@@ -127,11 +134,11 @@ export const MapPage = () => {
 
 	return (
 		<>
-			<OffCanvasList restaurants={query.data} />
 			<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY}>
-				<h1>Our map</h1>
-				<SearchMapForm onCitySearch={onCitySearch} />
-				<div style={{ height: "80vh", width: "80vw" }}>
+				<h1 className="text-center">SULTEN!</h1>
+				<OffCanvasList restaurants={query.data} />
+				<SearchMapForm onCitySearch={onCitySearch} onReset={handleReset} />
+				<div className="map">
 					<Map
 						defaultZoom={15}
 						/* Spara till senare */
