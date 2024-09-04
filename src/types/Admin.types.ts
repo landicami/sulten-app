@@ -17,6 +17,7 @@ export type LoginInfo = {
 };
 
 export type SignupInfo = {
+	name: string;
 	email: string;
 	password: string;
 	confirmPassword: string;
@@ -24,6 +25,7 @@ export type SignupInfo = {
 
 export type CreateAdmin = {
 	_id: string;
+	name: string;
 	email: string;
 	uid: string;
 };

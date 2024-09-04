@@ -5,6 +5,7 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
+import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import { AddRestaurantForm, Restaurant } from "../types/Restaurant.types";
 import useAuth from "../hooks/useAuth";
@@ -34,11 +35,11 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		},
 	});
 
-	const onAddRestaurant: SubmitHandler<AddRestaurantForm> = (data) => {
+	const onAddRestaurant: SubmitHandler<AddRestaurantForm> = async (data) => {
 		try {
 			setIsAdding(true);
-			onSave(data);
-			navigate(-1);
+			await onSave(data);
+			setTimeout(() => navigate("/"), 2000);
 		} catch (error) {
 			if (error instanceof Error) {
 				toast.error(error.message);
@@ -170,6 +171,11 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 									multiple
 								/>
 							</Form.Group>
+							<p>Photos added on this restaurant:</p>
+
+							{initialValues?.photoUrls.map((photo) => (
+								<Image src={photo} alt="Thumbnail" fluid className="img-thumbnail mb-3 me-2" />
+							))}
 
 							<Form.Group className="mb-3">
 								<Form.Label>Email</Form.Label>
