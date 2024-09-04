@@ -128,9 +128,7 @@ export const MapPage = () => {
 	return (
 		<>
 			<OffCanvasList restaurants={query.data} />
-			<APIProvider
-				apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
-			>
+			<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY}>
 				<h1>Our map</h1>
 				<SearchMapForm onCitySearch={onCitySearch} />
 				<div style={{ height: "80vh", width: "80vw" }}>
@@ -145,10 +143,10 @@ export const MapPage = () => {
 						mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 					>
 						{query.data &&
-							query.data.map((restaurant) => {
+							query.data.map((restaurant, index) => {
 								return (
 									<AdvancedMarker
-										key={restaurant._id}
+										key={`${restaurant._id}-${index}`}
 										clickable={true}
 										onClick={() => handleClickOpenInfo(restaurant)}
 										position={restaurant.location}
