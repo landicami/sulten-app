@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import Hamburger from "../assets/img/hamburger.png";
+import Hamburger from "../assets/images/hamburger.png";
 
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { Restaurant } from "../types/Restaurant.types";
