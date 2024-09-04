@@ -12,6 +12,7 @@ import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
 import OffCanvasList from "../components/OffCanvasList";
+import useGetRestaurantsByCity from "../hooks/useGetCityResturants";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -28,6 +29,10 @@ export const MapPage = () => {
 	const { data: restaurants } = useAdminRestaurants();
 
 	const cityParamSearch = searchParams.get("city") || "";
+
+	const query = useGetRestaurantsByCity();
+
+	console.log("query from useGetRestaurantsByCity", query);
 
 	const handleClickOpenInfo = (inofObject: Restaurant) => {
 		setOpenInfo(true);
@@ -68,7 +73,7 @@ export const MapPage = () => {
 
 				setCity(result);
 
-				console.log("Searched for", cityFromApi.results[0].formatted_address);
+				console.log("Searched for", result);
 			} else {
 				toast.error("Please try another city, could not find that one");
 			}
@@ -94,12 +99,20 @@ export const MapPage = () => {
 		}
 	};
 
+	console.log("City from MapPage is: ", city);
+	// useEffect(() => {
+	// 	if (restaurants && city !== null) {
+	// 		const restaurantsByCity = restaurants.filter((restaurant) => restaurant.city === city);
+	// 		setFilterdRestaurants(restaurantsByCity);
+	// 	}
+	// }, [city, restaurants]);
+
 	useEffect(() => {
-		if (restaurants && city !== null) {
-			const restaurantsByCity = restaurants.filter((restaurant) => restaurant.city === city);
-			setFilterdRestaurants(restaurantsByCity);
+		if (city) {
+			query.changeCity(city);
 		}
-	}, [city, restaurants]);
+	}, [city]);
+
 
 	useEffect(() => {
 		if (cityParamSearch) {
@@ -118,7 +131,7 @@ export const MapPage = () => {
 				(error) => {
 					toast.error(error.message);
 					setUserLocation({ lat: 55.6071256, lng: 13.0212773 });
-					setCity("Malmö");
+					// setCity("Malmö");
 				}
 			);
 
@@ -135,7 +148,7 @@ export const MapPage = () => {
 
 	return (
 		<>
-			<OffCanvasList restaurants={filterRestaurants} />
+			<OffCanvasList restaurants={query.data} />
 			<APIProvider
 				apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
 				onLoad={() => console.log("Maps API has loaded.")}
@@ -153,8 +166,8 @@ export const MapPage = () => {
 						}}
 						mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 					>
-						{filterRestaurants &&
-							filterRestaurants.map((restaurant) => {
+						{query.data &&
+							query.data.map((restaurant) => {
 								return (
 									<AdvancedMarker
 										key={restaurant._id}
