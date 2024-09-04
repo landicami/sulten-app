@@ -16,6 +16,8 @@ import Image from "react-bootstrap/Image";
 import insta from "../assets/images/insta.svg";
 import facebook from "../assets/images/facebook.svg";
 import link from "../assets/images/link.svg";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -138,7 +140,6 @@ export const MapPage = () => {
 				<div style={{ height: "80vh", width: "80vw" }}>
 					<Map
 						defaultZoom={15}
-						/* Spara till senare */
 						defaultCenter={mapCenterAfterSearch ?? userLocation ?? { lat: 55.6071256, lng: 13.0212773 }}
 						center={shouldCenterMap ? mapCenterAfterSearch : undefined}
 						onCameraChanged={() => {
@@ -189,7 +190,7 @@ export const MapPage = () => {
 										{infoRestaurant.phone && <Card.Text>
 											<strong>Phone:</strong> {infoRestaurant.phone}
 										</Card.Text>}
-										<div className="icon-wrapper">
+										<div className="icon-wrapper mb-3">
 											{infoRestaurant.website && (
 												<Card.Text>
 													<a href={infoRestaurant.website} target="_blank" rel="noopener noreferrer">
@@ -197,7 +198,6 @@ export const MapPage = () => {
 													</a>
 												</Card.Text>
 											)}
-
 											{infoRestaurant.facebook && (
 												<Card.Text className="icon-wrapper">
 													<a href={infoRestaurant.facebook} target="_blank" rel="noopener noreferrer">
@@ -205,13 +205,29 @@ export const MapPage = () => {
 													</a>
 												</Card.Text>
 											)}
-
 											{infoRestaurant.instagram && (
 												<Card.Text className="icon-wrapper">
 													<a href={infoRestaurant.instagram} target="_blank" rel="noopener noreferrer">
 														<Image className="icon" src={insta} alt="Instagram icon" />
 													</a>
 												</Card.Text>
+											)}
+										</div>
+										<div>
+											{infoRestaurant.photoUrls.length > 1 && (
+												<>
+													<Row className="row">
+														{infoRestaurant.photoUrls.slice(1).map((photo, index) => (
+															<Col xs={8} md={6} lg={4} key={`${photo}-${index}`}>
+																<Card.Img
+																	alt="Resturant photos"
+																	className="other-photos mb-3"
+																	src={photo}
+																/>
+															</Col>
+														))}
+													</Row>
+												</>
 											)}
 										</div>
 									</Card.Body>
