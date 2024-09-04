@@ -1,11 +1,14 @@
 import { useState } from "react";
-import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Hamburger from "../assets/images/hamburger.png";
-
+import insta from "../assets/images/insta.svg";
+import facebook from "../assets/images/facebook.svg";
+import link from "../assets/images/link.svg";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { Restaurant } from "../types/Restaurant.types";
 import { Image } from "react-bootstrap";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 interface OffCanvasListProps {
 	restaurants: Restaurant[] | null;
@@ -34,32 +37,85 @@ const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
 				</Offcanvas.Header>
 				<Offcanvas.Body>
 					{restaurants &&
-						restaurants.map((restaurant, index) => (
-							<Card className="mb-3" key={`${restaurant._id}-${index}`}>
+						restaurants.map((restaurant) => (
+							<Card key={restaurant._id} className="mb-3 card-canva">
+								{restaurant.photoUrls.length === 0 ? (
+									<Card.Img
+										variant="top"
+										src="https://placehold.co/600x400?text=No+Image+Yet+:("
+									/>
+								) : (
+									<Card.Img variant="top" src={restaurant.photoUrls[0]} />
+								)}
 								<Card.Body>
 									<Card.Title>{restaurant.name}</Card.Title>
-									<Card.Text>{restaurant.description}</Card.Text>
-									<Card.Text>{restaurant.category}</Card.Text>
-									<Card.Text>{restaurant.offer}</Card.Text>
-									<div className="d-flex">
-										{restaurant.photoUrls.map((photo, index) => (
-											<div key={`${photo}-${index}`} className="justify-content-center me-2">
-												<Card.Img src={photo}></Card.Img>
-											</div>
-										))}
+									{restaurant.description && (
+										<Card.Text>{restaurant.description}</Card.Text>
+									)}
+									<Card.Text>
+										<strong>Category:</strong> {restaurant.category}
+									</Card.Text>
+									<Card.Text>
+										<strong>Offer:</strong> {restaurant.offer}
+									</Card.Text>
+									{restaurant.phone && (
+										<Card.Text>
+											<strong>Phone:</strong> {restaurant.phone}
+										</Card.Text>
+									)}
+									<div className="icon-wrapper mb-3">
+										{restaurant.website && (
+											<Card.Text>
+												<a
+													href={restaurant.website}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													<Image className="icon" src={link} alt="Website icon" />
+												</a>
+											</Card.Text>
+										)}
+										{restaurant.facebook && (
+											<Card.Text className="icon-wrapper">
+												<a
+													href={restaurant.facebook}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													<Image className="icon" src={facebook} alt="Facebook icon" />
+												</a>
+											</Card.Text>
+										)}
+										{restaurant.instagram && (
+											<Card.Text className="icon-wrapper">
+												<a
+													href={restaurant.instagram}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													<Image className="icon" src={insta} alt="Instagram icon" />
+												</a>
+											</Card.Text>
+										)}
+									</div>
+									<div>
+										{restaurant.photoUrls.length > 1 && (
+											<>
+												<Row className="row">
+													{restaurant.photoUrls.slice(1).map((photo, index) => (
+														<Col xs={8} md={6} lg={4} key={`${photo}-${index}`}>
+															<Card.Img
+																alt="Resturant photos"
+																className="other-photos mb-3"
+																src={photo}
+															/>
+														</Col>
+													))}
+												</Row>
+											</>
+										)}
 									</div>
 								</Card.Body>
-								<Card.Footer>
-									{restaurant.website ? (
-										<Button>
-											<a className="link-color" href={restaurant.website}>
-												Besök hemsidan
-											</a>
-										</Button>
-									) : (
-										<p>Det finns ingen hemsida</p>
-									)}
-								</Card.Footer>
 							</Card>
 						))}
 				</Offcanvas.Body>
