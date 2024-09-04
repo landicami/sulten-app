@@ -32,18 +32,32 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignup }) => {
 
 	if (isCreatingAdmin) {
 		return (
-			<Card>
-				<CardText>
-					<p>Creating admin</p>
+			<div>
+				<p className="pb-3 pt-3 text-center">
+					Creating admin
 					<PulseLoader color="#FBBC04" />
-				</CardText>
-			</Card>
+				</p>
+			</div>
 		);
 	}
 
 	return (
 		<>
 			<Form onSubmit={handleSubmit(onSubmitSignup)}>
+				<Form.Group controlId="name" className="mb-5">
+					<Form.Label>NAME</Form.Label>
+					<Form.Control
+						placeholder="Username"
+						type="name"
+						{...register("name", {
+							required: "You need to enter a name",
+						})}
+					/>
+					{errors.name && <p className="text-danger">{errors.name.message || "Not a name"}</p>}
+				</Form.Group>
+
+				<hr />
+
 				<Form.Group controlId="email" className="mb-5">
 					<Form.Label>EMAIL</Form.Label>
 					<Form.Control
@@ -98,9 +112,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignup }) => {
 					)}
 				</Form.Group>
 
-				<Button disabled={isCreatingAdmin} type="submit" variant="success">
-					"Sign up"
-				</Button>
+				<div className="d-grid gap-2 col-6 mx-auto">
+					<Button disabled={isCreatingAdmin} type="submit" variant="success">
+						Sign up
+					</Button>
+				</div>
 			</Form>
 
 			<Card className="text-center mb-3 mt-3">

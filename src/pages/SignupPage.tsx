@@ -21,6 +21,7 @@ const SignupPage = () => {
 			const newAdmin = await signup(data.email, data.password);
 			const docRef = doc(sigupAdminCol);
 			await setDoc(docRef, {
+				name: data.name,
 				email: data.email,
 				uid: newAdmin.user.uid,
 				_id: docRef.id,
@@ -45,7 +46,7 @@ const SignupPage = () => {
 				<Col md={{ span: 6, offset: 3 }}>
 					<Card className="mb-5">
 						<CardBody>
-							<Card.Title className="mb-3">Sign Up</Card.Title>
+							<Card.Title className="mb-3 text-center">Sign Up</Card.Title>
 
 							{okForSignup ? (
 								<SignupForm onSignup={handleSignup} />
