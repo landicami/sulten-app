@@ -4,6 +4,7 @@ import Card from "react-bootstrap/Card";
 
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { Restaurant } from "../types/Restaurant.types";
+
 interface OffCanvasListProps {
 	restaurants: Restaurant[] | null;
 }
@@ -25,25 +26,25 @@ const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
 				</Offcanvas.Header>
 				<Offcanvas.Body>
 					{restaurants &&
-						restaurants.map((resturant) => (
-							<Card className="mb-3" key={resturant._id}>
+						restaurants.map((restaurant, index) => (
+							<Card className="mb-3" key={`${restaurant._id}-${index}`}>
 								<Card.Body>
-									<Card.Title>{resturant.name}</Card.Title>
-									<Card.Text>{resturant.description}</Card.Text>
-									<Card.Text>{resturant.category}</Card.Text>
-									<Card.Text>{resturant.offer}</Card.Text>
+									<Card.Title>{restaurant.name}</Card.Title>
+									<Card.Text>{restaurant.description}</Card.Text>
+									<Card.Text>{restaurant.category}</Card.Text>
+									<Card.Text>{restaurant.offer}</Card.Text>
 									<div className="d-flex">
-										{resturant.photoUrls.map((photo) => (
-											<div className="justify-content-center me-2">
+										{restaurant.photoUrls.map((photo, index) => (
+											<div key={`${photo}-${index}`} className="justify-content-center me-2">
 												<Card.Img src={photo}></Card.Img>
 											</div>
 										))}
 									</div>
 								</Card.Body>
 								<Card.Footer>
-									{resturant.website ? (
+									{restaurant.website ? (
 										<Button>
-											<a href={resturant.website}></a>Besök hemsidan
+											<a href={restaurant.website}></a>Besök hemsidan
 										</Button>
 									) : (
 										<p>Det finns ingen hemsida</p>
