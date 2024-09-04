@@ -222,6 +222,7 @@ export const MapPage = () => {
 						)}
 					</Map>
 
+					{query.isError && <p>{query.error}</p>}
 					{userLocation && navigationDestination && (
 						<MapNavigation userLocation={userLocation} destination={navigationDestination} />
 					)}

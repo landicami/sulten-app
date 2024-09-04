@@ -11,8 +11,6 @@ const useGetRestaurantsByCity = (initialCity: string | null = null) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [city, setCity] = useState<string | null>(initialCity);
 
-	console.log("city from hook is: ", initialCity);
-
 	const changeCity = (newCity: string) => {
 		setCity(newCity);
 	};
