@@ -168,7 +168,7 @@ export const MapPage = () => {
 							})}
 
 						<AdvancedMarker title="Your position" key={"userPos"} position={userLocation}>
-							<Pin background={"#4285F4"} glyphColor={"#FFFFFF"} borderColor={"#4285F4"} />
+							<div id="hand-pointer-on-map">👇</div>
 						</AdvancedMarker>
 
 						{openInfo && infoRestaurant && (
