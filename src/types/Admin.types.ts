@@ -23,7 +23,9 @@ export type SignupInfo = {
 };
 
 export type CreateAdmin = {
+	_id: string;
 	email: string;
+	uid: string;
 };
 
 export type UpdateAdminFormData = {

@@ -18,10 +18,12 @@ const SignupPage = () => {
 
 	const handleSignup: SubmitHandler<SignupInfo> = async (data) => {
 		try {
-			await signup(data.email, data.password);
+			const newAdmin = await signup(data.email, data.password);
 			const docRef = doc(sigupAdminCol);
 			await setDoc(docRef, {
 				email: data.email,
+				uid: newAdmin.user.uid,
+				_id: docRef.id,
 			});
 			toast.success("Account created! 🥳");
 

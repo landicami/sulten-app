@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import Container from "react-bootstrap/Container"
+import Container from "react-bootstrap/Container";
 import useAuth from "../../hooks/useAuth";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { UpdateAdminFormData } from "../../types/Admin.types";
@@ -18,207 +18,198 @@ import { useParams } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";
 
 const UpdateProfilePage = () => {
-    const [submitting, setSubmitting] = useState(false);
-    const { id } = useParams();
-    const { data: admin } = useAdmin(id);
-    const {
-        currentAdmin,
-        updateInfo,
-        setName,
-        setEmail,
-        setPassword,
-        setPhoto,
-        userEmail,
-        userName,
-        userPhoto,
-    } = useAuth();
-    const { handleSubmit, register, watch, formState: { errors } } = useForm<UpdateAdminFormData>({
-        defaultValues: {
-            email: currentAdmin?.email ?? "",
-            name: currentAdmin?.displayName ?? "",
-        }
-    });
+	const [submitting, setSubmitting] = useState(false);
+	const { id } = useParams();
+	const { data: admin } = useAdmin(id);
+	const { currentAdmin, updateInfo, setName, setEmail, setPassword, setPhoto, userEmail, userName, userPhoto } =
+		useAuth();
+	const {
+		handleSubmit,
+		register,
+		watch,
+		formState: { errors },
+	} = useForm<UpdateAdminFormData>({
+		defaultValues: {
+			email: currentAdmin?.email ?? "",
+			name: currentAdmin?.displayName ?? "",
+		},
+	});
 
-    const passRef = useRef("");
-    passRef.current = watch("password");
+	const passRef = useRef("");
+	passRef.current = watch("password");
 
-    const onEditAdmin: SubmitHandler<UpdateAdminFormData> = async (data) => {
+	const onEditAdmin: SubmitHandler<UpdateAdminFormData> = async (data) => {
+		if (!id || !admin || !admin[0]) {
+			throw new Error("No valid admin data found.");
+		}
 
-        if (!id || !admin || !admin[0]) {
-            throw new Error("No valid admin data found.");
-            return;
-        }
+		try {
+			setSubmitting(true);
+			let photoUrl = userPhoto;
 
-        try {
-            setSubmitting(true);
-            let photoUrl = userPhoto;
+			if (data.photoFiles && data.photoFiles.length > 0) {
+				const photo = data.photoFiles[0];
+				const fileRef = ref(storage, `admins/${admin[0].uid}/${photo.name}`);
 
+				try {
+					const uploadPhoto = await uploadBytes(fileRef, photo);
+					photoUrl = await getDownloadURL(uploadPhoto.ref);
+					await setPhoto(photoUrl);
+				} catch (err) {
+					if (err instanceof Error) {
+						toast.error(err.message);
+					} else {
+						toast.error("Error uploading photo to admin!");
+					}
+				}
+			}
 
-            if (data.photoFiles && data.photoFiles.length > 0) {
-                const photo = data.photoFiles[0];
-                const fileRef = ref(storage, `admins/${admin[0].uid}/${photo.name}`);
+			const adminDocRef = doc(adminCol, admin[0]._id);
+			const { photoFiles, ...restData } = data;
 
-                try {
-                    const uploadPhoto = await uploadBytes(fileRef, photo);
-                    photoUrl = await getDownloadURL(uploadPhoto.ref);
-                    await setPhoto(photoUrl);
+			await updateDoc(adminDocRef, {
+				...restData,
+				photoUrl,
+			});
 
-                } catch (err) {
-                    if (err instanceof Error) {
-                        toast.error(err.message);
-                    } else {
-                        toast.error("Error uploading photo to admin!");
-                    }
-                }
-            }
+			if (data.email !== userEmail) {
+				await setEmail(data.email);
+			}
 
+			if (data.name !== userName) {
+				await setName(data.name);
+			}
 
-            const adminDocRef = doc(adminCol, admin[0]._id);
-            const { photoFiles, ...restData } = data;
+			if (data.password) {
+				await setPassword(data.password);
+			}
 
+			updateInfo();
+			toast.success("Admin updated successfully");
+		} catch (error) {
+			if (error instanceof FirebaseError) {
+				toast.error(error.message);
+			}
+			if (error instanceof Error) {
+				toast.error(error.message);
+			} else {
+				toast.error("Error updating admin");
+			}
+		}
 
-            await updateDoc(adminDocRef, {
-                ...restData,
-                photoUrl,
-            });
+		setSubmitting(false);
+	};
 
-            if (data.email !== userEmail) {
-                await setEmail(data.email);
-            }
+	return (
+		<Container>
+			<Row>
+				<Col md={{ span: 6, offset: 3 }}>
+					<Card className="mb-2">
+						<Card.Body>
+							<Card.Title className="mb-2">Edit Profile</Card.Title>
 
-            if (data.name !== userName) {
-                await setName(data.name);
-            }
+							<div>
+								<div className="d-flex justify-content-center mb-2">
+									<Image
+										src={
+											currentAdmin?.photoURL ||
+											"https://placehold.co/600x400?text=No+Image+Yet+:("
+										}
+										fluid
+										roundedCircle
+										className="img-square w-75"
+									/>
+								</div>
+							</div>
 
-            if (data.password) {
-                await setPassword(data.password);
-            }
+							<Form onSubmit={handleSubmit(onEditAdmin)} className="mb-3">
+								<Form.Group controlId="name" className="mb-3">
+									<Form.Label>Name</Form.Label>
+									<Form.Control
+										placeholder="Admin Adminsson"
+										type="text"
+										{...register("name", {
+											minLength: {
+												value: 2,
+												message: "Your name must be at least 2 characters long",
+											},
+										})}
+									/>
+									{errors.name && <p>{errors.name.message || "Invalid value"}</p>}
+								</Form.Group>
 
-            updateInfo();
-            toast.success("Admin updated successfully");
+								<Form.Group controlId="photoFiles" className="mb-3">
+									<Form.Label>Photo</Form.Label>
+									<Form.Control
+										accept="image/gif,image/jpeg,image/png,image/webp"
+										type="file"
+										{...register("photoFiles")}
+									/>
+									{errors.photoFiles && <p>{errors.photoFiles.message || "Invalid value"}</p>}
+								</Form.Group>
 
-        } catch (error) {
-            if (error instanceof FirebaseError) {
-                toast.error(error.message);
-            }
-            if (error instanceof Error) {
-                toast.error(error.message);
-            } else {
-                toast.error("Error updating admin");
-            }
+								<Form.Group controlId="email" className="mb-3">
+									<Form.Label>Email</Form.Label>
+									<Form.Control
+										placeholder="admin.adminsson@hottestmejl.se"
+										type="email"
+										{...register("email", {
+											required: "You must specify an email",
+										})}
+									/>
+									{errors.email && <p>{errors.email.message || "Invalid value"}</p>}
+								</Form.Group>
 
-        }
+								<Form.Group controlId="password" className="mb-3">
+									<Form.Label>Password</Form.Label>
+									<Form.Control
+										type="password"
+										autoComplete="new-password"
+										{...register("password", {
+											minLength: {
+												message: "Enter at least 6 characters",
+												value: 6,
+											},
+										})}
+									/>
+									{errors.password && <p>{errors.password.message || "Invalid value"}</p>}
+									<Form.Text>Min 6 characters</Form.Text>
+								</Form.Group>
 
-        setSubmitting(false);
-    }
+								<Form.Group controlId="confirmPassword" className="mb-3">
+									<Form.Label>Confirm Password</Form.Label>
+									<Form.Control
+										type="password"
+										autoComplete="off"
+										{...register("confirmPassword", {
+											minLength: {
+												message: "Enter at least 6 characters",
+												value: 6,
+											},
+											validate: (value) => {
+												return (
+													!passRef.current ||
+													value === passRef.current ||
+													"Passwords do not match"
+												);
+											},
+										})}
+									/>
+									{errors.confirmPassword && (
+										<p>{errors.confirmPassword.message || "Invalid value"}</p>
+									)}
+								</Form.Group>
 
-    return (
-        <Container>
-            <Row>
-                <Col md={{ span: 6, offset: 3 }}>
-                    <Card className="mb-2">
-                        <Card.Body>
-                            <Card.Title className="mb-2">Edit Profile</Card.Title>
-
-                            <div>
-                                <div className="d-flex justify-content-center mb-2">
-                                    <Image
-                                        src={currentAdmin?.photoURL || "https://placehold.co/600x400?text=No+Image+Yet+:("}
-                                        fluid
-                                        roundedCircle
-                                        className="img-square w-75"
-                                    />
-                                </div>
-                            </div>
-
-                            <Form onSubmit={handleSubmit(onEditAdmin)} className="mb-3">
-                                <Form.Group controlId="name" className="mb-3">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control
-                                        placeholder="Admin Adminsson"
-                                        type="text"
-                                        {...register("name", {
-                                            minLength: {
-                                                value: 2,
-                                                message: "Your name must be at least 2 characters long",
-                                            }
-                                        })}
-                                    />
-                                    {errors.name && <p>{errors.name.message || "Invalid value"}</p>}
-                                </Form.Group>
-
-                                <Form.Group controlId="photoFiles" className="mb-3">
-                                    <Form.Label>Photo</Form.Label>
-                                    <Form.Control
-                                        accept="image/gif,image/jpeg,image/png,image/webp"
-                                        type="file"
-                                        {...register("photoFiles")}
-                                    />
-                                    {errors.photoFiles && <p>{errors.photoFiles.message || "Invalid value"}</p>}
-                                </Form.Group>
-
-                                <Form.Group controlId="email" className="mb-3">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control
-                                        placeholder="admin.adminsson@hottestmejl.se"
-                                        type="email"
-                                        {...register("email", {
-                                            required: "You must specify an email",
-                                        })}
-                                    />
-                                    {errors.email && <p>{errors.email.message || "Invalid value"}</p>}
-                                </Form.Group>
-
-                                <Form.Group controlId="password" className="mb-3">
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        autoComplete="new-password"
-                                        {...register("password", {
-                                            minLength: {
-                                                message: "Enter at least 6 characters",
-                                                value: 6,
-                                            }
-                                        })}
-                                    />
-                                    {errors.password && <p>{errors.password.message || "Invalid value"}</p>}
-                                    <Form.Text>Min 6 characters</Form.Text>
-                                </Form.Group>
-
-                                <Form.Group controlId="confirmPassword" className="mb-3">
-                                    <Form.Label>Confirm Password</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        autoComplete="off"
-                                        {...register("confirmPassword", {
-                                            minLength: {
-                                                message: "Enter at least 6 characters",
-                                                value: 6,
-                                            },
-                                            validate: (value) => {
-                                                return !passRef.current || value === passRef.current || "Passwords do not match";
-                                            }
-                                        })}
-                                    />
-                                    {errors.confirmPassword && <p>{errors.confirmPassword.message || "Invalid value"}</p>}
-                                </Form.Group>
-
-                                <Button
-                                    disabled={submitting}
-                                    type="submit"
-                                    variant="primary"
-                                >
-                                    {submitting
-                                        ? "Editing your info..."
-                                        : "Submit"}
-                                </Button>
-                            </Form>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </Container >
-    )
-}
+								<Button disabled={submitting} type="submit" variant="primary">
+									{submitting ? "Editing your info..." : "Submit"}
+								</Button>
+							</Form>
+						</Card.Body>
+					</Card>
+				</Col>
+			</Row>
+		</Container>
+	);
+};
 
 export default UpdateProfilePage;
