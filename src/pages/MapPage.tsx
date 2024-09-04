@@ -127,6 +127,7 @@ export const MapPage = () => {
 				(error) => {
 					toast.error(error.message);
 					setUserLocation({ lat: 55.6071256, lng: 13.0212773 });
+					getPostalTown();
 				}
 			);
 
