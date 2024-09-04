@@ -151,13 +151,13 @@ export const MapPage = () => {
 										onClick={() => handleClickOpenInfo(restaurant)}
 										position={restaurant.location}
 									>
-										<Pin background={"#FBBC04"} glyphColor={"#000"} borderColor={"#000"} />
+										<div className="pointer-on-map">🍔</div>
 									</AdvancedMarker>
 								);
 							})}
 
 						<AdvancedMarker title="Your position" key={"userPos"} position={userLocation}>
-							<div id="hand-pointer-on-map">👇</div>
+							<div className="pointer-on-map">👇</div>
 						</AdvancedMarker>
 
 						{openInfo && infoRestaurant && (
