@@ -21,7 +21,7 @@ const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch, onReset }) 
 	return (
 		<>
 			<Col>
-				<Form className="mb-2" onSubmit={handleCitySearch}>
+				<Form className="search-input mb-2" onSubmit={handleCitySearch}>
 					<InputGroup>
 						<Form.Control
 							id="citySearch"

@@ -25,6 +25,11 @@
 	margin: auto;
 }
 
+.search-input {
+	width: 80vw;
+	margin: auto;
+}
+
 .pointer-on-map {
 	font-size: 2rem;
 }
@@ -43,7 +48,6 @@
 	border-radius: 50%;
 	object-fit: contain;
 }
-
 
 .img-thumbnail {
 	width: 5rem;
@@ -64,7 +68,6 @@
 		flex-direction: row;
 		justify-content: space-evenly;
 
-
 		.icon {
 			width: 16px;
 			height: 16px;
@@ -77,6 +80,5 @@
 			cursor: pointer;
 			text-decoration: none;
 		}
-
 	}
 }
