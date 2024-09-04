@@ -90,6 +90,7 @@ export const MapPage = () => {
 		if (postalTown.length > 0) {
 			const newcity = postalTown[0].long_name;
 			setSearchParams({ city: newcity });
+			setCity(newcity);
 		} else {
 			toast.error("No postal town found in the response.");
 		}
@@ -100,6 +101,7 @@ export const MapPage = () => {
 			getPostalTown(`${userLocation.lat},${userLocation.lng}`);
 		}
 		setSearchParams({ city: "Malmö" });
+		setCity("Malmö");
 	};
 
 	useEffect(() => {
