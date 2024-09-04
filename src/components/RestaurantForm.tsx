@@ -35,11 +35,11 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		},
 	});
 
-	const onAddRestaurant: SubmitHandler<AddRestaurantForm> = (data) => {
+	const onAddRestaurant: SubmitHandler<AddRestaurantForm> = async (data) => {
 		try {
 			setIsAdding(true);
-			onSave(data);
-			navigate(-1);
+			await onSave(data);
+			setTimeout(() => navigate("/"), 2000);
 		} catch (error) {
 			if (error instanceof Error) {
 				toast.error(error.message);

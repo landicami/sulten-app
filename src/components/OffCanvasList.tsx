@@ -51,7 +51,9 @@ const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
 								<Card.Footer>
 									{restaurant.website ? (
 										<Button>
-											<a href={restaurant.website}></a>Besök hemsidan
+											<a className="link-color" href={restaurant.website}>
+												Besök hemsidan
+											</a>
 										</Button>
 									) : (
 										<p>Det finns ingen hemsida</p>

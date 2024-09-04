@@ -12,6 +12,10 @@ import { getGeocoding } from "../service/GoogleMaps_API";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
 import OffCanvasList from "../components/OffCanvasList";
 import useGetRestaurantsByCity from "../hooks/useGetCityResturants";
+import Image from "react-bootstrap/Image";
+import insta from "../assets/images/insta.svg";
+import facebook from "../assets/images/facebook.svg";
+import link from "../assets/images/link.svg";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -180,13 +184,43 @@ export const MapPage = () => {
 									)}
 									<Card.Body>
 										<Card.Title>{infoRestaurant.name}</Card.Title>
-										<Card.Text>{infoRestaurant.description}</Card.Text>
+										{infoRestaurant.description &&
+											<Card.Text>{infoRestaurant.description}</Card.Text>
+										}
 										<Card.Text>
 											<strong>Category:</strong> {infoRestaurant.category}
 										</Card.Text>
 										<Card.Text>
 											<strong>Offer:</strong> {infoRestaurant.offer}
 										</Card.Text>
+										{infoRestaurant.phone && <Card.Text>
+											<strong>Phone:</strong> {infoRestaurant.phone}
+										</Card.Text>}
+										<div className="icon-wrapper">
+											{infoRestaurant.website && (
+												<Card.Text>
+													<a href={infoRestaurant.website} target="_blank" rel="noopener noreferrer">
+														<Image className="icon" src={link} alt="Website icon" />
+													</a>
+												</Card.Text>
+											)}
+
+											{infoRestaurant.facebook && (
+												<Card.Text className="icon-wrapper">
+													<a href={infoRestaurant.facebook} target="_blank" rel="noopener noreferrer">
+														<Image className="icon" src={facebook} alt="Facebook icon" />
+													</a>
+												</Card.Text>
+											)}
+
+											{infoRestaurant.instagram && (
+												<Card.Text className="icon-wrapper">
+													<a href={infoRestaurant.instagram} target="_blank" rel="noopener noreferrer">
+														<Image className="icon" src={insta} alt="Instagram icon" />
+													</a>
+												</Card.Text>
+											)}
+										</div>
 									</Card.Body>
 									<Card.Footer className="d-flex justify-content-center">
 										<Button
