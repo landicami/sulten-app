@@ -90,7 +90,7 @@ export const MapPage = () => {
 			console.log(newcity);
 			setCity(newcity);
 		} else {
-			console.error("No postal town found in the response.");
+			toast.error("No postal town found in the response.");
 		}
 	};
 
