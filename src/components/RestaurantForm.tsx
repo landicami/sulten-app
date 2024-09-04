@@ -39,7 +39,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 		try {
 			setIsAdding(true);
 			onSave(data);
-			navigate(-1);
+			navigate("/");
 		} catch (error) {
 			if (error instanceof Error) {
 				toast.error(error.message);
