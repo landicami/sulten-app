@@ -173,8 +173,14 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 							</Form.Group>
 							<p>Photos added on this restaurant:</p>
 
-							{initialValues?.photoUrls.map((photo) => (
-								<Image src={photo} alt="Thumbnail" fluid className="img-thumbnail mb-3 me-2" />
+							{initialValues?.photoUrls.map((photo, index) => (
+								<Image
+									key={index}
+									src={photo}
+									alt="Thumbnail"
+									fluid
+									className="img-thumbnail mb-3 me-2"
+								/>
 							))}
 
 							<Form.Group className="mb-3">
