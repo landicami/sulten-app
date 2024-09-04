@@ -1,7 +1,6 @@
 import { APIProvider, AdvancedMarker, InfoWindow, Map, Pin } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
-import useAdminRestaurants from "../hooks/useAdminRestaurants";
 import { LatLng } from "../types/Locations.types";
 import { Restaurant } from "../types/Restaurant.types";
 import Button from "react-bootstrap/Button";
@@ -12,6 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
 import { getReverseGeocoding } from "../service/GoogleMaps_API";
 import OffCanvasList from "../components/OffCanvasList";
+import useGetRestaurantsByCity from "../hooks/useGetCityResturants";
 
 export const MapPage = () => {
 	const [openInfo, setOpenInfo] = useState(false);
@@ -23,16 +23,15 @@ export const MapPage = () => {
 	const [shouldCenterMap, setShouldCenterMap] = useState(false);
 	const [mapCenterAfterSearch, setMapCenterAfterSearch] = useState<{ lat: number; lng: number } | null>(null);
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [filterRestaurants, setFilterdRestaurants] = useState<Restaurant[] | null>(null);
-
-	const { data: restaurants } = useAdminRestaurants();
 
 	const cityParamSearch = searchParams.get("city") || "";
 
-	const handleClickOpenInfo = (inofObject: Restaurant) => {
+	const query = useGetRestaurantsByCity();
+
+	const handleClickOpenInfo = (infoObj: Restaurant) => {
 		setOpenInfo(true);
-		setOpenInfoLocation(inofObject.location);
-		setInfoRestaurant(inofObject);
+		setOpenInfoLocation(infoObj.location);
+		setInfoRestaurant(infoObj);
 	};
 
 	const handleClickCloseInfo = () => {
@@ -54,7 +53,6 @@ export const MapPage = () => {
 	const searchCityWithApi = async (city: string) => {
 		try {
 			const cityFromApi = await getGeocoding(city);
-			console.log("City from api", cityFromApi);
 
 			if (cityFromApi.status === "OK" && cityFromApi.results) {
 				setMapCenterAfterSearch({
@@ -67,8 +65,6 @@ export const MapPage = () => {
 				const result = cityFromApi.results[0].formatted_address.substring(0, lastComma).trim();
 
 				setCity(result);
-
-				console.log("Searched for", cityFromApi.results[0].formatted_address);
 			} else {
 				toast.error("Please try another city, could not find that one");
 			}
@@ -87,7 +83,6 @@ export const MapPage = () => {
 
 		if (postalTown.length > 0) {
 			const newcity = postalTown[0].long_name;
-			console.log(newcity);
 			setCity(newcity);
 		} else {
 			toast.error("No postal town found in the response.");
@@ -95,11 +90,10 @@ export const MapPage = () => {
 	};
 
 	useEffect(() => {
-		if (restaurants && city !== null) {
-			const restaurantsByCity = restaurants.filter((restaurant) => restaurant.city === city);
-			setFilterdRestaurants(restaurantsByCity);
+		if (city) {
+			query.changeCity(city);
 		}
-	}, [city, restaurants]);
+	}, [city]);
 
 	useEffect(() => {
 		if (cityParamSearch) {
@@ -118,7 +112,6 @@ export const MapPage = () => {
 				(error) => {
 					toast.error(error.message);
 					setUserLocation({ lat: 55.6071256, lng: 13.0212773 });
-					setCity("Malmö");
 				}
 			);
 
@@ -128,18 +121,14 @@ export const MapPage = () => {
 			};
 		} else {
 			toast.error("Your browser does not support us getting your location.");
-			console.error("Geolocation is not supported by this browser.");
 			getPostalTown();
 		}
 	}, []);
 
 	return (
 		<>
-			<OffCanvasList restaurants={filterRestaurants} />
-			<APIProvider
-				apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
-				onLoad={() => console.log("Maps API has loaded.")}
-			>
+			<OffCanvasList restaurants={query.data} />
+			<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY}>
 				<h1>Our map</h1>
 				<SearchMapForm onCitySearch={onCitySearch} />
 				<div style={{ height: "80vh", width: "80vw" }}>
@@ -153,11 +142,11 @@ export const MapPage = () => {
 						}}
 						mapId={import.meta.env.VITE_GOOGLE_MAP_ID}
 					>
-						{filterRestaurants &&
-							filterRestaurants.map((restaurant) => {
+						{query.data &&
+							query.data.map((restaurant, index) => {
 								return (
 									<AdvancedMarker
-										key={restaurant._id}
+										key={`${restaurant._id}-${index}`}
 										clickable={true}
 										onClick={() => handleClickOpenInfo(restaurant)}
 										position={restaurant.location}
@@ -209,6 +198,7 @@ export const MapPage = () => {
 						)}
 					</Map>
 
+					{query.isError && <p>{query.error}</p>}
 					{userLocation && navigationDestination && (
 						<MapNavigation userLocation={userLocation} destination={navigationDestination} />
 					)}

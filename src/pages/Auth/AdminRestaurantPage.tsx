@@ -29,6 +29,17 @@ const AdminRestaurantPage = () => {
 			accessorKey: "email",
 			header: "Email",
 		},
+		{
+			accessorKey: "photoUrl",
+			header: "Photo",
+			cell: ({ getValue }) => (
+				<img
+					src={(getValue() as string) || "https://placehold.co/50x50?text=no+pic"}
+					alt="Admin Photo"
+					className="admin-photo-in-table"
+				/>
+			),
+		},
 	];
 
 	const restaurantColumnDefs: ColumnDef<Restaurant>[] = [

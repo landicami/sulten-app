@@ -29,8 +29,6 @@ const AddRestaurantPage = () => {
 		}
 
 		let latLng = {};
-
-		// geocode address into lat/lng
 		try {
 			const geoCodeRes = await getGeocoding(data.address + ", " + data.city);
 
@@ -45,10 +43,8 @@ const AddRestaurantPage = () => {
 			};
 		} catch (err) {
 			if (err instanceof Error) {
-				console.log(err.message, "❌");
 				toast.error("This is not the address you are looking for ❌");
 			} else {
-				console.log("❌ error...");
 				toast.error("This is not the address you are looking for ❌");
 			}
 		}

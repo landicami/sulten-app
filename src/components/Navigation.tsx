@@ -15,7 +15,6 @@ const Navigation = () => {
 				<Navbar.Brand as={Link} to="/">
 					😡 SULTEN.nu
 				</Navbar.Brand>
-
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="ms-auto">
@@ -24,7 +23,13 @@ const Navigation = () => {
 								<NavDropdown
 									title={
 										currentAdmin.photoURL ? (
-											<Image src={currentAdmin.photoURL} fluid height={30} width={30} roundedCircle />
+											<Image
+												src={currentAdmin.photoURL}
+												fluid
+												height={30}
+												width={30}
+												roundedCircle
+											/>
 										) : (
 											(currentAdmin.displayName || currentAdmin.email) ?? "Admin"
 										)
@@ -56,6 +61,9 @@ const Navigation = () => {
 						</Nav.Link>
 						<Nav.Link as={NavLink} end to="/add-restaurant">
 							Add recommendation
+						</Nav.Link>
+						<Nav.Link as={NavLink} end to="/about-us">
+							About
 						</Nav.Link>
 					</Nav>
 				</Navbar.Collapse>

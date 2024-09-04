@@ -9,14 +9,16 @@ import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
 import { toast } from "react-toastify";
+import useGetRestaurantsByCity from "../hooks/useGetCityResturants";
 
 const ListAllRestaurantsPage = () => {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [city, setCity] = useState<string | null>(null);
-	const [filterRestaurants, setFilterdRestaurants] = useState<Restaurant[] | null>(null);
 	const cityParamSearch = searchParams.get("city") || "";
 	const { data: adminRestaurants, loading: adminLoading } = useAdminRestaurants();
+
+	const query = useGetRestaurantsByCity();
 
 	const updateMedia = () => {
 		setIsMobile(window.innerWidth < 768);
@@ -29,27 +31,25 @@ const ListAllRestaurantsPage = () => {
 	const searchCityWithApi = async (city: string) => {
 		try {
 			const cityFromApi = await getGeocoding(city);
-			console.log("City from api", cityFromApi);
 
 			if (cityFromApi.status === "OK" && cityFromApi.results) {
 				const lastComma = cityFromApi.results[0].formatted_address.lastIndexOf(",");
 				const result = cityFromApi.results[0].formatted_address.substring(0, lastComma).trim();
 
 				setCity(result);
-
-				console.log("Searched for", cityFromApi.results[0].formatted_address);
 			} else {
 				toast.error("Please try another city, could not find that one");
 			}
 		} catch (err) {
 			if (err instanceof Error) console.error("Error fetching city data:", err.message);
-
 			toast.error("An error occurred while searching for the city. Please try again.");
 		}
 	};
 
 	const handleReset = () => {
-		setFilterdRestaurants(null);
+		setCity(null);
+		setSearchParams({});
+		query.changeCity(null);
 	};
 
 	useEffect(() => {
@@ -58,17 +58,18 @@ const ListAllRestaurantsPage = () => {
 	}, []);
 
 	useEffect(() => {
+		if (city) {
+			query.changeCity(city);
+		} else {
+			query.changeCity(null);
+		}
+	}, [city]);
+
+	useEffect(() => {
 		if (cityParamSearch) {
 			searchCityWithApi(cityParamSearch);
 		}
 	}, [cityParamSearch, searchParams]);
-
-	useEffect(() => {
-		if (adminRestaurants && city !== null) {
-			const restaurantsByCity = adminRestaurants.filter((restaurant) => restaurant.city === city);
-			setFilterdRestaurants(restaurantsByCity);
-		}
-	}, [city, adminRestaurants]);
 
 	const columnDefs: ColumnDef<Restaurant>[] = [
 		{
@@ -119,8 +120,6 @@ const ListAllRestaurantsPage = () => {
 
 	return (
 		<Container fluid>
-			{adminLoading && <p>Loading...</p>}
-
 			<h2 className="mb-4">List of all restaurants 🥙</h2>
 			<div className="mb-3 d-flex justify-content-between">
 				<SearchMapForm onCitySearch={onCitySearch} />
@@ -129,9 +128,10 @@ const ListAllRestaurantsPage = () => {
 				</Button>
 			</div>
 
-			{adminRestaurants &&
+			{adminLoading || query.isLoading && <p>Loading...</p>}
+
+			{!city && adminRestaurants &&
 				adminRestaurants.length > 0 &&
-				!filterRestaurants &&
 				(isMobile ? (
 					<Row>
 						{adminRestaurants.map((restaurant) => (
@@ -196,11 +196,11 @@ const ListAllRestaurantsPage = () => {
 				) : (
 					<TanstackTable columns={columnDefs} data={adminRestaurants} />
 				))}
-			{filterRestaurants &&
-				filterRestaurants.length > 0 &&
+			{city && query.data &&
+				query.data.length > 0 &&
 				(isMobile ? (
 					<Row>
-						{filterRestaurants.map((restaurant) => (
+						{query.data.map((restaurant) => (
 							<Col xs={12} key={restaurant._id} className="mb-3">
 								<div className="p-3 border border-secondary rounded">
 									<h3 className="h5">{restaurant.name}</h3>
@@ -260,11 +260,11 @@ const ListAllRestaurantsPage = () => {
 						))}
 					</Row>
 				) : (
-					<TanstackTable columns={columnDefs} data={filterRestaurants} />
+					<TanstackTable columns={columnDefs} data={query.data} />
 				))}
 			{!adminRestaurants || (adminRestaurants.length == 0 && <p>No restaurants here...</p>)}
-			{!filterRestaurants ||
-				(filterRestaurants.length == 0 && <p>No restaurants in the city you searched for...</p>)}
+			{!query.data ||
+				(query.data.length == 0 && <p>No restaurants in the city you searched for...</p>)}
 		</Container>
 	);
 };
