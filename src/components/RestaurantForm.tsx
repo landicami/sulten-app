@@ -138,21 +138,21 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({ initialValues, onSave }
 
 								<Form.Check
 									type="checkbox"
-									value="lunch"
+									value="Lunch. "
 									label="Lunch"
 									aria-label="Pick lunch as an offer"
 									{...register("offer", { required: true })}
 								/>
 								<Form.Check
 									type="checkbox"
-									value="after-work"
+									value="After-work. "
 									label="After Work"
 									aria-label="Pick after-work as an offer"
 									{...register("offer", { required: true })}
 								/>
 								<Form.Check
 									type="checkbox"
-									value="dinner/a-la-carte"
+									value="Dinner/Á-la-carte."
 									label="Dinner/Á-la-carte"
 									aria-label="Pick dinner as an offer"
 									{...register("offer", { required: true })}
