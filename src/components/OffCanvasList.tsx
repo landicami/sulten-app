@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import Hamburger from "../assets/images/hamburger.png";
 
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { Restaurant } from "../types/Restaurant.types";
+import { Image } from "react-bootstrap";
 
 interface OffCanvasListProps {
 	restaurants: Restaurant[] | null;
@@ -16,9 +18,15 @@ const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
 
 	return (
 		<>
-			<Button variant="primary" onClick={handleShow}>
-				Show list of restaurants
-			</Button>
+			<div className="hamburger-button">
+				<Image
+					src={Hamburger}
+					title="Show list of restaurants"
+					role="button"
+					onClick={handleShow}
+					style={{ height: "2rem" }}
+				/>
+			</div>
 
 			<Offcanvas show={show} onHide={handleClose}>
 				<Offcanvas.Header closeButton>

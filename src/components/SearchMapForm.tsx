@@ -7,9 +7,10 @@ import InputGroup from "react-bootstrap/InputGroup";
 
 interface SearchMapFormProps {
 	onCitySearch: (city: string) => void;
+	onReset: () => void;
 }
 
-const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch }) => {
+const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch, onReset }) => {
 	const [citySearch, setCitySearch] = useState("");
 
 	const handleCitySearch = (e: React.FormEvent) => {
@@ -19,8 +20,8 @@ const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch }) => {
 	};
 	return (
 		<>
-			<Col lg={6} md={8} sm={12}>
-				<Form className="mb-2" onSubmit={handleCitySearch}>
+			<Col>
+				<Form className="search-input mb-2" onSubmit={handleCitySearch}>
 					<InputGroup>
 						<Form.Control
 							id="citySearch"
@@ -30,8 +31,11 @@ const SearchMapForm: React.FC<SearchMapFormProps> = ({ onCitySearch }) => {
 							value={citySearch}
 							onChange={(e) => setCitySearch(e.target.value)}
 						/>
-						<Button type="submit" className="btn btn-sm" onClick={handleCitySearch}>
+						<Button type="submit" onClick={handleCitySearch}>
 							Search
+						</Button>
+						<Button variant="warning" onClick={onReset}>
+							Reset
 						</Button>
 					</InputGroup>
 				</Form>

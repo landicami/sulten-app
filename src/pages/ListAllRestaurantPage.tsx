@@ -4,7 +4,7 @@ import { Restaurant } from "../types/Restaurant.types";
 import Container from "react-bootstrap/Container";
 import TanstackTable from "../components/table/TanstackTable";
 import { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import SearchMapForm from "../components/SearchMapForm";
 import { useSearchParams } from "react-router-dom";
 import { getGeocoding } from "../service/GoogleMaps_API";
@@ -122,15 +122,13 @@ const ListAllRestaurantsPage = () => {
 		<Container fluid>
 			<h2 className="mb-4">List of all restaurants 🥙</h2>
 			<div className="mb-3 d-flex justify-content-between">
-				<SearchMapForm onCitySearch={onCitySearch} />
-				<Button className="btn-sm" onClick={handleReset} variant="outline-warning">
-					Reset search
-				</Button>
+				<SearchMapForm onCitySearch={onCitySearch} onReset={handleReset} />
 			</div>
 
-			{adminLoading || query.isLoading && <p>Loading...</p>}
+			{adminLoading || (query.isLoading && <p>Loading...</p>)}
 
-			{!city && adminRestaurants &&
+			{!city &&
+				adminRestaurants &&
 				adminRestaurants.length > 0 &&
 				(isMobile ? (
 					<Row>
@@ -196,7 +194,8 @@ const ListAllRestaurantsPage = () => {
 				) : (
 					<TanstackTable columns={columnDefs} data={adminRestaurants} />
 				))}
-			{city && query.data &&
+			{city &&
+				query.data &&
 				query.data.length > 0 &&
 				(isMobile ? (
 					<Row>
@@ -263,8 +262,7 @@ const ListAllRestaurantsPage = () => {
 					<TanstackTable columns={columnDefs} data={query.data} />
 				))}
 			{!adminRestaurants || (adminRestaurants.length == 0 && <p>No restaurants here...</p>)}
-			{!query.data ||
-				(query.data.length == 0 && <p>No restaurants in the city you searched for...</p>)}
+			{!query.data || (query.data.length == 0 && <p>No restaurants in the city you searched for...</p>)}
 		</Container>
 	);
 };
