@@ -37,3 +37,26 @@
 #hand-pointer-on-map {
 	font-size: 2rem;
 }
+
+.notfound-wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+
+	.button {
+		border: 2px rgb(252, 252, 252) solid;
+		background-color: rgba(38, 38, 214, 0.899);
+		color: #ffffff;
+		padding: 0.5rem 2rem;
+
+		a {
+			text-decoration: none;
+
+			&:hover {
+				color: rgb(252, 252, 252);
+			}
+		}
+	}
+}
