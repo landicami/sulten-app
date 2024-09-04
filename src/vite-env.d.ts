@@ -9,6 +9,7 @@ interface ImportMetaEnv {
 	readonly VITE_FIREBASE_APP_ID: string;
 	readonly VITE_GOOGLE_API_KEY: string;
 	readonly VITE_GOOGLE_MAP_ID: string;
+	readonly VITE_PASSWORD_FOR_SIGNUP: string | undefined;
 }
 
 interface ImportMeta {
