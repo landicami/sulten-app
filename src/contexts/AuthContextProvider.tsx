@@ -1,4 +1,5 @@
 import {
+	createUserWithEmailAndPassword,
 	onAuthStateChanged,
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
@@ -25,6 +26,7 @@ interface IAuthContext {
 	setPhoto: (url: string) => Promise<void>;
 	setPassword: (password: string) => Promise<void>;
 	updateInfo: () => boolean;
+	signup: (email: string, password: string) => Promise<UserCredential>;
 }
 
 export const AuthContext = createContext<IAuthContext | null>(null);
@@ -68,7 +70,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		}
 
 		return updateProfile(currentAdmin, { displayName: name });
-	}
+	};
 
 	const setEmail = async (email: string) => {
 		if (!currentAdmin) {
@@ -76,7 +78,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		}
 
 		return updateEmail(currentAdmin, email);
-	}
+	};
 
 	const setPhoto = async (url: string) => {
 		if (!currentAdmin) {
@@ -84,7 +86,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		}
 
 		return updateProfile(currentAdmin, { photoURL: url });
-	}
+	};
 
 	const setPassword = async (password: string) => {
 		if (!currentAdmin) {
@@ -92,7 +94,11 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		}
 
 		return updatePassword(currentAdmin, password);
-	}
+	};
+
+	const signup = (email: string, password: string) => {
+		return createUserWithEmailAndPassword(auth, email, password);
+	};
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (admin) => {
@@ -119,6 +125,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 				setEmail,
 				setPassword,
 				setPhoto,
+				signup,
 				userEmail,
 				userName,
 				userPhoto,
