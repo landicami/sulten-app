@@ -8,6 +8,8 @@ import SignupForm from "../components/SignupForm";
 import { SubmitHandler } from "react-hook-form";
 import { SignupInfo } from "../types/Admin.types";
 import { FirebaseError } from "firebase/app";
+import { doc, setDoc } from "firebase/firestore";
+import { sigupAdminCol } from "../service/firebase";
 
 const SignupPage = () => {
 	const [okForSignup, setOkForSignup] = useState(false);
@@ -17,7 +19,12 @@ const SignupPage = () => {
 	const handleSignup: SubmitHandler<SignupInfo> = async (data) => {
 		try {
 			await signup(data.email, data.password);
+			const docRef = doc(sigupAdminCol);
+			await setDoc(docRef, {
+				email: data.email,
+			});
 			toast.success("Account created! 🥳");
+
 			navigate("/admin-restaurants");
 		} catch (err) {
 			if (err instanceof FirebaseError) {
@@ -25,7 +32,7 @@ const SignupPage = () => {
 			} else if (err instanceof Error) {
 				toast.error(err.message);
 			} else {
-				toast.error("Something went wrong. Have you tried turning it off and on again?");
+				toast.error("ERROR! We don't know what we did.... 🐵");
 			}
 		}
 	};

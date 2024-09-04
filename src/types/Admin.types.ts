@@ -22,6 +22,10 @@ export type SignupInfo = {
 	confirmPassword: string;
 };
 
+export type CreateAdmin = {
+	email: string;
+};
+
 export type UpdateAdminFormData = {
 	uid: string;
 	name: string;

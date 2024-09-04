@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore, DocumentData, collection, CollectionReference } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { Restaurant } from "../types/Restaurant.types";
-import { Admin } from "../types/Admin.types";
+import { Admin, CreateAdmin } from "../types/Admin.types";
 
 const firebaseConfig = {
 	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -28,5 +28,6 @@ const createCollection = <T = DocumentData>(collectionName: string) => {
 
 export const restaurantCol = createCollection<Restaurant>("restaurants");
 export const adminCol = createCollection<Admin>("admins");
+export const sigupAdminCol = createCollection<CreateAdmin>("admins");
 
 export default app;
