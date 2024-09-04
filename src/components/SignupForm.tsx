@@ -9,10 +9,10 @@ import { PulseLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 
 interface SignupFormProps {
-	onSubmitSignup: SubmitHandler<SignupInfo>;
+	onSignup: SubmitHandler<SignupInfo>;
 }
 
-const SignupForm: React.FC<SignupFormProps> = ({ onSubmitSignup }) => {
+const SignupForm: React.FC<SignupFormProps> = ({ onSignup }) => {
 	const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 	const {
 		handleSubmit,
@@ -23,6 +23,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmitSignup }) => {
 
 	const passwordRef = useRef("");
 	passwordRef.current = watch("password");
+
+	const onSubmitSignup: SubmitHandler<SignupInfo> = async (data) => {
+		setIsCreatingAdmin(true);
+		await onSignup(data);
+		setIsCreatingAdmin(false);
+	};
 
 	if (isCreatingAdmin) {
 		return (
@@ -70,6 +76,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmitSignup }) => {
 					<Form.Text>Password needs to be atleast 6 characters</Form.Text>
 				</Form.Group>
 
+				<hr />
+
 				<Form.Group controlId="confirmPassword" className="mb-5">
 					<Form.Label>CONFIRM PASSWORD</Form.Label>
 					<Form.Control
@@ -90,18 +98,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmitSignup }) => {
 					)}
 				</Form.Group>
 
-				<Button disabled={isCreatingAdmin} variant="success">
+				<Button disabled={isCreatingAdmin} type="submit" variant="success">
 					"Sign up"
 				</Button>
 			</Form>
 
-			<Card className="text-center">
-				<p>
+			<Card className="text-center mb-3 mt-3">
+				<CardText className="pb-3 pt-3">
 					Forgot your password? Get a new here ➡️
 					<Link to="/forgot-password" className="stretched-link">
 						Forgot password
 					</Link>
-				</p>
+				</CardText>
 			</Card>
 		</>
 	);

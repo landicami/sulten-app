@@ -51,7 +51,9 @@ const CheckPasswordForm: React.FC<CheckPasswordFormProps> = ({ onCorrectPassword
 					{errors.password && <p className="invalid">{errors.password.message || "WRONG!"}</p>}
 				</Form.Group>
 
-				<Button variant="success">Submit</Button>
+				<Button type="submit" variant="success">
+					Submit
+				</Button>
 			</Form>
 		</>
 	);
