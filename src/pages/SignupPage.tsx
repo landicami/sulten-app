@@ -4,14 +4,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardBody, CardText, Col, Container, Row } from "react-bootstrap";
 import CheckPasswordForm from "../components/CheckPasswordForm";
 import { toast } from "react-toastify";
+import SignupForm from "../components/SignupForm";
 
 const SignupPage = () => {
 	const [okForSignup, setOkForSignup] = useState(false);
 	const { signup } = useAuth();
 	const navigate = useNavigate();
 
+	const handleSignup = () => {};
+
 	return (
-		<Container className="py-3 center-y">
+		<Container className="py-3">
 			<Row>
 				<Col md={{ span: 6, offset: 3 }}>
 					<Card className="mb-5">
@@ -19,7 +22,7 @@ const SignupPage = () => {
 							<Card.Title className="mb-3">Sign Up</Card.Title>
 
 							{okForSignup ? (
-								<SignupForm onSignup={handleSignup} />
+								<SignupForm onSubmitSignup={handleSignup} />
 							) : (
 								<CheckPasswordForm
 									onCorrectPassword={() => setOkForSignup(true)}
