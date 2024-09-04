@@ -90,7 +90,7 @@ export const MapPage = () => {
 			console.log(newcity);
 			setCity(newcity);
 		} else {
-			console.error("No postal town found in the response.");
+			toast.error("No postal town found in the response.");
 		}
 	};
 
@@ -166,6 +166,10 @@ export const MapPage = () => {
 									</AdvancedMarker>
 								);
 							})}
+
+						<AdvancedMarker title="Your position" key={"userPos"} position={userLocation}>
+							<div id="hand-pointer-on-map">👇</div>
+						</AdvancedMarker>
 
 						{openInfo && infoRestaurant && (
 							<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
