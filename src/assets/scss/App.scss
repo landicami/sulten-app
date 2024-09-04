@@ -13,21 +13,6 @@
 	cursor: pointer;
 }
 
-.resturant-info-card {
-	width: 300px;
-	margin: 0 auto;
-	background-color: #212529;
-
-	img {
-		object-fit: cover;
-		height: 200px;
-	}
-
-	button {
-		padding: 0 1rem;
-	}
-}
-
 .map-navigation {
 	padding: 2rem;
 	border: 2px solid #ffffff;
@@ -51,4 +36,35 @@
 	height: 2rem;
 	border-radius: 50%;
 	object-fit: contain;
+}
+
+.resturant-info-card {
+	width: 300px;
+	margin: 0 auto;
+	background-color: #212529;
+
+	button {
+		padding: 0 1rem;
+	}
+
+	.icon-wrapper {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-evenly;
+
+
+		.icon {
+			width: 16px;
+			height: 16px;
+			margin-right: 0;
+			vertical-align: middle;
+		}
+
+		a {
+			color: #ffffff;
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+	}
 }
