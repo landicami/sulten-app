@@ -51,6 +51,7 @@ const AddRestaurantPage = () => {
 
 		try {
 			const docRef = doc(restaurantCol);
+			// eslint-disable-next-line
 			const { photoFiles, ...restData } = data;
 
 			await setDoc(docRef, {

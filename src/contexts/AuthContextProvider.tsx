@@ -111,6 +111,8 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		}
 
 		return unsubscribe;
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

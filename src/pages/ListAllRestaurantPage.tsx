@@ -63,7 +63,7 @@ const ListAllRestaurantsPage = () => {
 		} else {
 			query.changeCity(null);
 		}
-	}, [city]);
+	}, [city, query]);
 
 	useEffect(() => {
 		if (cityParamSearch) {

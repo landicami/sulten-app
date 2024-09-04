@@ -20,7 +20,7 @@ const EditRestaurantPage = () => {
 		try {
 			const docRef = doc(restaurantCol, id);
 			const existingDoc = await getDoc(docRef);
-			let existingPhotoUrls: string[] = existingDoc.data()?.photoUrls || [];
+			const existingPhotoUrls: string[] = existingDoc.data()?.photoUrls || [];
 
 			const newPhotoUrls: string[] = [];
 			const photoId = uuidv4();
@@ -42,6 +42,7 @@ const EditRestaurantPage = () => {
 
 			const updatedPhotoUrls = [...existingPhotoUrls, ...newPhotoUrls];
 
+			// eslint-disable-next-line
 			const { photoFiles, ...restData } = data;
 
 			await updateDoc(docRef, {

@@ -21,6 +21,8 @@ const useStreamCollection = <T>(collectionRef: CollectionReference<T>, ...qContr
 		});
 
 		return unsubscribe;
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [collectionRef]);
 
 	return {

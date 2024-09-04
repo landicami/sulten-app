@@ -65,6 +65,7 @@ const UpdateProfilePage = () => {
 			}
 
 			const adminDocRef = doc(adminCol, admin[0]._id);
+			// eslint-disable-next-line
 			const { photoFiles, ...restData } = data;
 
 			await updateDoc(adminDocRef, {

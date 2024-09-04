@@ -106,7 +106,7 @@ export const MapPage = () => {
 		if (city) {
 			query.changeCity(city);
 		}
-	}, [city]);
+	}, [city, query]);
 
 	useEffect(() => {
 		if (cityParamSearch) {
@@ -136,6 +136,8 @@ export const MapPage = () => {
 			toast.error("Your browser does not support us getting your location.");
 			getPostalTown();
 		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -185,36 +187,50 @@ export const MapPage = () => {
 									)}
 									<Card.Body>
 										<Card.Title>{infoRestaurant.name}</Card.Title>
-										{infoRestaurant.description &&
+										{infoRestaurant.description && (
 											<Card.Text>{infoRestaurant.description}</Card.Text>
-										}
+										)}
 										<Card.Text>
 											<strong>Category:</strong> {infoRestaurant.category}
 										</Card.Text>
 										<Card.Text>
 											<strong>Offer:</strong> {infoRestaurant.offer}
 										</Card.Text>
-										{infoRestaurant.phone && <Card.Text>
-											<strong>Phone:</strong> {infoRestaurant.phone}
-										</Card.Text>}
+										{infoRestaurant.phone && (
+											<Card.Text>
+												<strong>Phone:</strong> {infoRestaurant.phone}
+											</Card.Text>
+										)}
 										<div className="icon-wrapper mb-3">
 											{infoRestaurant.website && (
 												<Card.Text>
-													<a href={infoRestaurant.website} target="_blank" rel="noopener noreferrer">
+													<a
+														href={infoRestaurant.website}
+														target="_blank"
+														rel="noopener noreferrer"
+													>
 														<Image className="icon" src={link} alt="Website icon" />
 													</a>
 												</Card.Text>
 											)}
 											{infoRestaurant.facebook && (
 												<Card.Text className="icon-wrapper">
-													<a href={infoRestaurant.facebook} target="_blank" rel="noopener noreferrer">
+													<a
+														href={infoRestaurant.facebook}
+														target="_blank"
+														rel="noopener noreferrer"
+													>
 														<Image className="icon" src={facebook} alt="Facebook icon" />
 													</a>
 												</Card.Text>
 											)}
 											{infoRestaurant.instagram && (
 												<Card.Text className="icon-wrapper">
-													<a href={infoRestaurant.instagram} target="_blank" rel="noopener noreferrer">
+													<a
+														href={infoRestaurant.instagram}
+														target="_blank"
+														rel="noopener noreferrer"
+													>
 														<Image className="icon" src={insta} alt="Instagram icon" />
 													</a>
 												</Card.Text>
