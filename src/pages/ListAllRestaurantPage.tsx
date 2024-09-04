@@ -29,21 +29,17 @@ const ListAllRestaurantsPage = () => {
 	const searchCityWithApi = async (city: string) => {
 		try {
 			const cityFromApi = await getGeocoding(city);
-			console.log("City from api", cityFromApi);
 
 			if (cityFromApi.status === "OK" && cityFromApi.results) {
 				const lastComma = cityFromApi.results[0].formatted_address.lastIndexOf(",");
 				const result = cityFromApi.results[0].formatted_address.substring(0, lastComma).trim();
 
 				setCity(result);
-
-				console.log("Searched for", cityFromApi.results[0].formatted_address);
 			} else {
 				toast.error("Please try another city, could not find that one");
 			}
 		} catch (err) {
 			if (err instanceof Error) console.error("Error fetching city data:", err.message);
-
 			toast.error("An error occurred while searching for the city. Please try again.");
 		}
 	};

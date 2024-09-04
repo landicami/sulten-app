@@ -17,7 +17,6 @@ const MapNavigation: React.FC<MapNavigationProps> = ({ userLocation, destination
     const [route, setRoute] = useState<google.maps.DirectionsRoute>();
     const leg = route?.legs[0];
 
-
     useEffect(() => {
         if (!routesLibrary || !map) return;
         setNavigationService(new routesLibrary.DirectionsService());
@@ -28,10 +27,8 @@ const MapNavigation: React.FC<MapNavigationProps> = ({ userLocation, destination
         if (!navigationService || !navigationRenderer || !destination) return;
 
         if (userLocation) {
-
             const location = { lat: userLocation.lat, lng: userLocation.lng };
             const dest = { lat: destination.lat, lng: destination.lng };
-
 
             navigationService
                 .route({
@@ -54,7 +51,6 @@ const MapNavigation: React.FC<MapNavigationProps> = ({ userLocation, destination
         if (!navigationRenderer) return;
         navigationRenderer.setMap(route ? map : null);
     }, [route, navigationRenderer]);
-
 
     if (!leg) {
         return null;
