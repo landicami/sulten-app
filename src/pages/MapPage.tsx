@@ -167,10 +167,6 @@ export const MapPage = () => {
 								);
 							})}
 
-						<AdvancedMarker title="Your position" key={"userPos"} position={userLocation}>
-							<Pin background={"#4285F4"} glyphColor={"#FFFFFF"} borderColor={"#4285F4"} />
-						</AdvancedMarker>
-
 						{openInfo && infoRestaurant && (
 							<InfoWindow position={openInfoLocation} onCloseClick={handleClickCloseInfo}>
 								<Card key={infoRestaurant._id} className="resturant-info-card">
