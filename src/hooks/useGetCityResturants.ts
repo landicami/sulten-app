@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { query, where, orderBy, getDocs } from "firebase/firestore";
-import { restaurantCol } from "../service/firebase"; // Se till att importera din Firestore instans
+import { restaurantCol } from "../service/firebase";
 import { Restaurant } from "../types/Restaurant.types";
 import { FirebaseError } from "firebase/app";
 
@@ -11,7 +11,7 @@ const useGetRestaurantsByCity = (initialCity: string | null = null) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [city, setCity] = useState<string | null>(initialCity);
 
-	const changeCity = (newCity: string) => {
+	const changeCity = (newCity: string | null) => {
 		setCity(newCity);
 	};
 
