@@ -147,7 +147,7 @@ export const MapPage = () => {
 		<>
 			<APIProvider apiKey={import.meta.env.VITE_GOOGLE_API_KEY}>
 				<h1 className="text-center">SULTEN!</h1>
-				<OffCanvasList restaurants={query.data} />
+				<OffCanvasList restaurants={query.data} onRestaurantSelect={handleClickOpenInfo} />
 				<SearchMapForm onCitySearch={onCitySearch} onReset={handleReset} />
 				<div className="map">
 					<Map

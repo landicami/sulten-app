@@ -12,8 +12,10 @@ import Col from "react-bootstrap/Col";
 
 interface OffCanvasListProps {
 	restaurants: Restaurant[] | null;
+	onRestaurantSelect: (restaurant: Restaurant) => void;
 }
-const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
+
+const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants, onRestaurantSelect }) => {
 	const [show, setShow] = useState(false);
 
 	const handleClose = () => setShow(false);
@@ -37,8 +39,15 @@ const OffCanvasList: React.FC<OffCanvasListProps> = ({ restaurants }) => {
 				</Offcanvas.Header>
 				<Offcanvas.Body>
 					{restaurants &&
-						restaurants.map((restaurant) => (
-							<Card key={restaurant._id} className="mb-3 card-canva">
+						restaurants.map((restaurant, index) => (
+							<Card
+								key={`${restaurant._id}-${index}`}
+								className="mb-3 card-canva"
+								onClick={() => {
+									onRestaurantSelect(restaurant);
+									handleClose();
+								}}
+								style={{ cursor: 'pointer' }}>
 								{restaurant.photoUrls.length === 0 ? (
 									<Card.Img
 										variant="top"
