@@ -86,7 +86,10 @@ const AdminRestaurantPage = () => {
 	return (
 		<div>
 			{adminLoading && tipLoading && adminsLoading && <p>Loading...</p>}
-			<h1 className="mb-3">Restaurants</h1>
+			<h1 className="mb-3">Admin</h1>
+
+			<hr />
+			<h2 className="mb-3 text-center">Restaurants</h2>
 
 			{adminRestaurants && adminRestaurants.length > 0 && (
 				<>
@@ -95,6 +98,8 @@ const AdminRestaurantPage = () => {
 				</>
 			)}
 
+			<hr />
+
 			{tipsRestaurants && tipsRestaurants.length > 0 && (
 				<>
 					<h2 className="mb-3">Tips from tippers</h2>
@@ -102,9 +107,11 @@ const AdminRestaurantPage = () => {
 				</>
 			)}
 
+			<hr />
+
 			{admins && admins.length > 0 && (
 				<>
-					<h2 className="mb-3">Admins </h2>
+					<h2 className="mb-3">Admins - overwiev </h2>
 					<TanstackTable columns={adminColumnDefs} data={admins} />
 				</>
 			)}

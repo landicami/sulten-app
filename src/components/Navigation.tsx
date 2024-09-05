@@ -40,7 +40,7 @@ const Navigation = () => {
 									</NavDropdown.Item>
 									<NavDropdown.Divider />
 									<NavDropdown.Item as={NavLink} end to="/admin-restaurants">
-										Restaurants - Admin
+										Admin
 									</NavDropdown.Item>
 									<NavDropdown.Divider />
 									<NavDropdown.Item as={NavLink} end to="/logout">
@@ -50,7 +50,7 @@ const Navigation = () => {
 							</>
 						) : (
 							<Nav.Link as={NavLink} end to="/login">
-								Log in as Admin
+								Log in
 							</Nav.Link>
 						)}
 						<Nav.Link as={NavLink} end to="/">
@@ -60,7 +60,7 @@ const Navigation = () => {
 							List
 						</Nav.Link>
 						<Nav.Link as={NavLink} end to="/add-restaurant">
-							Add recommendation
+							Recommend
 						</Nav.Link>
 						<Nav.Link as={NavLink} end to="/about-us">
 							About
