@@ -109,9 +109,11 @@ const AdminRestaurantPage = () => {
 
 			<hr />
 
+			<h2 className="mb-3">Admins - overwiev </h2>
+
 			{admins && admins.length > 0 && (
 				<>
-					<h2 className="mb-3">Admins - overwiev </h2>
+					<h2 className="mb-3">All Admins </h2>
 					<TanstackTable columns={adminColumnDefs} data={admins} />
 				</>
 			)}
